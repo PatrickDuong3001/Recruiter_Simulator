@@ -68,6 +68,7 @@ ingame = False
 startup_thread = False
 bigtech_thread = False
 start_up_environment = pygame.image.load("data/office.png")
+big_tech_environment = pygame.image.load("data/office_2.png")
 
 
 #control panel
@@ -161,6 +162,10 @@ while game_run:    #game_loop
         if startup_thread == True: 
             screen.blit(start_up_environment,(0,0))
             pygame.display.update()
+        elif bigtech_thread == True:
+            screen.blit(big_tech_environment,(0,0))
+            pygame.display.update()
+            
             
     speed.tick(FPS)
             
