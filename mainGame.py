@@ -26,10 +26,10 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT)) #create the game screen
 intro_song = pygame.mixer.Sound("data/intro_song.mp3")
 intro_song.set_volume(0.1)
 ingame_song = pygame.mixer.Sound("data/ingame_song.mp3")
+ingame_song.set_volume(0.1)
 
 #all sound effects:
 click_sound = pygame.mixer.Sound("data/click_effect.mp3")
-#click_sound.set_volume(0.1)
 
 #start game screen setup
 start_image = pygame.image.load("data/start_screen.png").convert()
@@ -65,17 +65,26 @@ message_font = pygame.font.Font("data/arial.TTF",20)
 message = message_font.render("The company only allows you to work after knowing your name!",True,"White")
 
 #ingame screen setup, phase 1
-ingame = False
 startup_thread = False
 bigtech_thread = False
 start_up_environment = pygame.image.load("data/office.png")
 big_tech_environment = pygame.image.load("data/office_2.png")
-
+thought_1 = pygame.image.load("data/bubble_1.png").convert_alpha()
+text_phase_1_font = pygame.font.Font("data/arial.TTF",20)
+text_phase_1 = text_phase_1_font.render("So, this is my INNOVATIVE office!",True,"Black")
+text_phase_1_1 = text_phase_1_font.render("Amazing!",True,"Black")
+text_message_font = pygame.font.Font("data/arial.TTF",10)
+text_message_phase_1 = text_message_font.render("click here",True,"Black")
+text_phase_1_2 = text_phase_1_font.render("Let's recruit a ROCKSTAR employee!",True,"Black")
+text_phase_1_3 = text_phase_1_font.render("Now, post a job on LinkedOut.",True,"Black")
+message_count_1 = 0
 
 #control panel
 game_activate = False
 game_run = True
 music_active = False
+phase = 0   #phase of recruitment
+bubble_1_active = True
     
 while game_run:    #game_loop    
     while start_screen:
@@ -133,21 +142,25 @@ while game_run:    #game_loop
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
                 inputed = False
                 if startup_rect.collidepoint(event.pos):   
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
                     if len(user_text) != 0:
                         budget = 85000  
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
                         game_activate = False
-                        ingame = True
+                        phase = 1
                         startup_thread = True
                 elif bigtech_rect.collidepoint(event.pos):   
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
                     budget = 250000
                     if len(user_text) != 0:
-                        budget = 85000  
+                        budget = 250000  
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
                         game_activate = False
-                        ingame = True
+                        phase = 1
                         bigtech_thread = True
                 elif input_window.collidepoint(event.pos):
                     inputed = True
@@ -166,17 +179,57 @@ while game_run:    #game_loop
         screen.blit(text_surface,(input_window.x + 5, input_window.y + 5))
         pygame.display.update(input_window)
                         
-    while ingame:
+    while phase == 1:
+        config_writer.set_current_phase(phase)
+        setting = settings(screen,ingame_song)
         intro_song.stop()
-        ingame_song.play(-1)        
+        ingame_song.play(-1)
+        
+        if setting.get_music_status() == False: 
+            ingame_song.set_volume(0.1)
+        else: 
+            ingame_song.set_volume(0)
         
         if startup_thread == True: 
             screen.blit(start_up_environment,(0,0))
-            pygame.display.update()
         elif bigtech_thread == True:
             screen.blit(big_tech_environment,(0,0))
-            pygame.display.update()
-            
-            
+        
+        if bubble_1_active:
+            thought_bubble_1_rect = screen.blit(thought_1,(230,0))
+            screen.blit(text_phase_1,(300,100))
+            screen.blit(text_phase_1_1,(420,150))
+            screen.blit(text_message_phase_1,(360,240))
+        
+        setting_button_rect = screen.blit(setting_button,(850,10))
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if setting_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    setting.run_setting()   
+                if thought_bubble_1_rect.collidepoint(event.pos) and bubble_1_active == True:
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    while bubble_1_active:
+                        screen.blit(text_phase_1_2,(280,100))
+                        screen.blit(text_phase_1_3,(320,150))
+                        screen.blit(text_message_phase_1,(360,240))
+                        pygame.display.update(thought_bubble_1_rect)
+                        screen.blit(thought_1,(230,0))
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                pygame.quit()    #quit game
+                                sys.exit()
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                if thought_bubble_1_rect.collidepoint(event.pos):
+                                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                    pygame.mixer.Channel(0).play(click_sound)
+                                    bubble_1_active = False
     speed.tick(FPS)
             

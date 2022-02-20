@@ -82,5 +82,11 @@ class settings():
                         
     def get_volume(self):
         return self.volume_channel
+    
+    def get_music_status(self):
+        return music_status[0]
+    
+    def get_sfx_status(self):
+        return sfx_status[0]
                                                
     

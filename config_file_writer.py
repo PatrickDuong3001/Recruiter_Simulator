@@ -25,3 +25,11 @@ class config_write():
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
     
+    def set_current_phase(self,phase):
+        '''
+        write the current phase of recruitment to the config file
+        '''
+        self.config.set("saved_session","phase",str(phase))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
