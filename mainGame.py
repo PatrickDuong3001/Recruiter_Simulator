@@ -1,17 +1,15 @@
 import pygame
-import os
 import sys
-import configparser
-import argparse
+import config_file_writer
+from setting_menu import settings
 
-#config = configparser.ConfigParser()
-#config.read("data/game_variables.ini")
-
+#initiate pygame session
 WIDTH = 900
 HEIGHT = 500
 FPS = 60
 pygame.init()
 speed = pygame.time.Clock()
+config_writer = config_file_writer.config_write()
 
 #game variables initiate
 budget = 0
@@ -28,7 +26,10 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT)) #create the game screen
 intro_song = pygame.mixer.Sound("data/intro_song.mp3")
 intro_song.set_volume(0.1)
 ingame_song = pygame.mixer.Sound("data/ingame_song.mp3")
-ingame_song.set_volume(0.1)
+
+#all sound effects:
+click_sound = pygame.mixer.Sound("data/click_effect.mp3")
+#click_sound.set_volume(0.1)
 
 #start game screen setup
 start_image = pygame.image.load("data/start_screen.png").convert()
@@ -74,10 +75,11 @@ big_tech_environment = pygame.image.load("data/office_2.png")
 #control panel
 game_activate = False
 game_run = True
-
+music_active = False
+    
 while game_run:    #game_loop    
-    while start_screen == True:
-
+    while start_screen:
+        setting = settings(screen,intro_song)
         screen.blit(start_image,(0,0))
         start_button_rect = screen.blit(start_button,(300,80))
         guide_button_rect = screen.blit(guide_button,(450,80))
@@ -95,16 +97,20 @@ while game_run:    #game_loop
                 sys.exit()
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
                 if start_button_rect.collidepoint(event.pos):     #click on Start button
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
                     start_screen = False
                     game_activate = True
                 elif guide_button_rect.collidepoint(event.pos):   #click in Guide button
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
                     print("Hello")
                     pygame.quit()    #quit game
                     sys.exit()
                 elif setting_button_rect.collidepoint(event.pos):
-                    print("Hello")
-                    pygame.quit()    #quit game
-                    sys.exit()
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    setting.run_setting()                 
     while game_activate:        
         screen.fill("#48dcff")
         startup_rect= screen.blit(startup_image,(175,165))
@@ -126,15 +132,20 @@ while game_run:    #game_loop
                 sys.exit()                
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
                 inputed = False
-                if startup_rect.collidepoint(event.pos):     #click on Start button
+                if startup_rect.collidepoint(event.pos):   
                     if len(user_text) != 0:
+                        budget = 85000  
+                        config_writer.set_current_budget(budget)
+                        config_writer.set_current_name(user_text)
                         game_activate = False
                         ingame = True
                         startup_thread = True
-                elif bigtech_rect.collidepoint(event.pos):   #click in Guide button
-                    if len(user_text) == 0:
-                        pass
-                    else:  
+                elif bigtech_rect.collidepoint(event.pos):   
+                    budget = 250000
+                    if len(user_text) != 0:
+                        budget = 85000  
+                        config_writer.set_current_budget(budget)
+                        config_writer.set_current_name(user_text)
                         game_activate = False
                         ingame = True
                         bigtech_thread = True
