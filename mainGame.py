@@ -79,7 +79,7 @@ text_message_phase_1 = text_message_font.render("click here",True,"Black")
 text_phase_1_2 = text_phase_1_font.render("Let's recruit a ROCKSTAR employee!",True,"Black")
 text_phase_1_3 = text_phase_1_font.render("Now, post a job on LinkedOut.",True,"Black")
 bigtech_computer_rect = pygame.Rect(495,230,180,110)
-instr_bubble = pygame.image.load("data/instruction_bubble_1.png").convert_alpha()
+instr_bubble = pygame.image.load("data/instruction_bubble.png").convert_alpha()
 linkedout_ins = pygame.font.Font("data/arial.TTF",15).render("LinkedOut",True,"Black")
 
 #control panel
