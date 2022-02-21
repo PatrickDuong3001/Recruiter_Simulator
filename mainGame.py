@@ -2,6 +2,7 @@ import pygame
 import sys
 import config_file_writer
 from setting_menu import settings
+from timer import timer_count
 
 #initiate pygame session
 WIDTH = 900
@@ -68,7 +69,7 @@ message = message_font.render("The company only allows you to work after knowing
 startup_thread = False
 bigtech_thread = False
 start_up_environment = pygame.image.load("data/office.png")
-big_tech_environment = pygame.image.load("data/office_2.png")
+big_tech_environment = pygame.image.load("data/office_2.jpg")
 thought_1 = pygame.image.load("data/bubble_1.png").convert_alpha()
 text_phase_1_font = pygame.font.Font("data/arial.TTF",20)
 text_phase_1 = text_phase_1_font.render("So, this is my INNOVATIVE office!",True,"Black")
@@ -77,7 +78,9 @@ text_message_font = pygame.font.Font("data/arial.TTF",10)
 text_message_phase_1 = text_message_font.render("click here",True,"Black")
 text_phase_1_2 = text_phase_1_font.render("Let's recruit a ROCKSTAR employee!",True,"Black")
 text_phase_1_3 = text_phase_1_font.render("Now, post a job on LinkedOut.",True,"Black")
-message_count_1 = 0
+bigtech_computer_rect = pygame.Rect(495,230,180,110)
+instr_bubble = pygame.image.load("data/instruction_bubble_1.png").convert_alpha()
+linkedout_ins = pygame.font.Font("data/arial.TTF",15).render("LinkedOut",True,"Black")
 
 #control panel
 game_activate = False
@@ -85,6 +88,7 @@ game_run = True
 music_active = False
 phase = 0   #phase of recruitment
 bubble_1_active = True
+instr_linkedout_active = False
     
 while game_run:    #game_loop    
     while start_screen:
@@ -151,10 +155,15 @@ while game_run:    #game_loop
                         game_activate = False
                         phase = 1
                         startup_thread = True
+                        screen.blit(start_up_environment,(0,0))
+                        screen.blit(setting_button,(850,10))
+                        intro_song.fadeout(3000)
+                        pygame.display.update()
+                        timer_count(3).start_timer()
+                        intro_song.stop()    #just in case fadeout doesn't stop music completely
                 elif bigtech_rect.collidepoint(event.pos):   
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                    budget = 250000
                     if len(user_text) != 0:
                         budget = 250000  
                         config_writer.set_current_budget(budget)
@@ -162,6 +171,12 @@ while game_run:    #game_loop
                         game_activate = False
                         phase = 1
                         bigtech_thread = True
+                        screen.blit(big_tech_environment,(0,0))
+                        screen.blit(setting_button,(850,10))
+                        intro_song.fadeout(3000)
+                        pygame.display.update()
+                        timer_count(3).start_timer()
+                        intro_song.stop()      #just in case fadeout doesn't stop music completely
                 elif input_window.collidepoint(event.pos):
                     inputed = True
                     
@@ -182,8 +197,7 @@ while game_run:    #game_loop
     while phase == 1:
         config_writer.set_current_phase(phase)
         setting = settings(screen,ingame_song)
-        intro_song.stop()
-        ingame_song.play(-1)
+        ingame_song.play(-1,fade_ms=1000)
         
         if setting.get_music_status() == False: 
             ingame_song.set_volume(0.1)
@@ -200,7 +214,11 @@ while game_run:    #game_loop
             screen.blit(text_phase_1,(300,100))
             screen.blit(text_phase_1_1,(420,150))
             screen.blit(text_message_phase_1,(360,240))
-        
+            
+        if instr_linkedout_active:
+            screen.blit(instr_bubble,(630,180))
+            screen.blit(linkedout_ins,(640,195))
+            
         setting_button_rect = screen.blit(setting_button,(850,10))
         pygame.display.update()
         
@@ -231,5 +249,8 @@ while game_run:    #game_loop
                                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                     pygame.mixer.Channel(0).play(click_sound)
                                     bubble_1_active = False
+                                    instr_linkedout_active = True
+                if bigtech_computer_rect.collidepoint(event.pos) and instr_linkedout_active==True:
+                    pass
     speed.tick(FPS)
             
