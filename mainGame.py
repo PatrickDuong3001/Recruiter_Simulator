@@ -81,6 +81,10 @@ text_phase_1_3 = text_phase_1_font.render("Now, post a job on LinkedOut.",True,"
 bigtech_computer_rect = pygame.Rect(495,230,180,110)
 instr_bubble = pygame.image.load("data/instruction_bubble.png").convert_alpha()
 linkedout_ins = pygame.font.Font("data/arial.TTF",15).render("LinkedOut",True,"Black")
+computer_screen = pygame.image.load("data/desktop_linked.png").convert_alpha()
+desk_zoom_in_1 = pygame.image.load("data/desk_1.jpg").convert_alpha()
+exit_icon = pygame.image.load("data/exit_icon.png").convert_alpha()
+post_button = pygame.image.load("data/post.png").convert_alpha()
 
 #control panel
 game_activate = False
@@ -89,6 +93,8 @@ music_active = False
 phase = 0   #phase of recruitment
 bubble_1_active = True
 instr_linkedout_active = False
+desktop_active = False
+post_transition = True
     
 while game_run:    #game_loop    
     while start_screen:
@@ -251,6 +257,35 @@ while game_run:    #game_loop
                                     bubble_1_active = False
                                     instr_linkedout_active = True
                 if bigtech_computer_rect.collidepoint(event.pos) and instr_linkedout_active==True:
-                    pass
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    desktop_active = True
+        while desktop_active:
+            screen.blit(desk_zoom_in_1,(0,0))
+            screen.blit(computer_screen,(150,40))
+            exit_icon_rect= screen.blit(exit_icon,(682,85))
+            if post_transition == False: 
+                post_button_rect = screen.blit(post_button,(408,250))
+            
+            pygame.display.update()
+            
+            while post_transition:    #fancy fade in post button
+                timer_count(3).start_timer()
+                post_button_rect = screen.blit(post_button,(408,250))
+                pygame.display.update(post_button_rect)
+                post_transition = False
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()    #quit game
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_icon_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
+                        desktop_active = False
+                    if post_button_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
     speed.tick(FPS)
             
