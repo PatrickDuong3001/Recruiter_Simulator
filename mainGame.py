@@ -83,8 +83,14 @@ instr_bubble = pygame.image.load("data/instruction_bubble.png").convert_alpha()
 linkedout_ins = pygame.font.Font("data/arial.TTF",15).render("LinkedOut",True,"Black")
 computer_screen = pygame.image.load("data/desktop_linked.png").convert_alpha()
 desk_zoom_in_1 = pygame.image.load("data/desk_1.jpg").convert_alpha()
+desk_zoom_in_2 = pygame.image.load("data/desk_2.jpg").convert_alpha()
 exit_icon = pygame.image.load("data/exit_icon.png").convert_alpha()
 post_button = pygame.image.load("data/post.png").convert_alpha()
+desktop_blank = pygame.image.load("data/desktop_blank.png").convert_alpha()
+desktop_white = pygame.image.load("data/desktop_white.png").convert_alpha()
+intern_button = pygame.image.load("data/intern.png").convert_alpha()
+mid_button = pygame.image.load("data/mid.png").convert_alpha()
+senior_button = pygame.image.load("data/senior.png").convert_alpha()
 
 #control panel
 game_activate = False
@@ -95,6 +101,11 @@ bubble_1_active = True
 instr_linkedout_active = False
 desktop_active = False
 post_transition = True
+choose_position_active = False
+intern_thread = False
+mid_level_thread = False
+senior_thread = False
+white_transition = True
     
 while game_run:    #game_loop    
     while start_screen:
@@ -199,9 +210,10 @@ while game_run:    #game_loop
         input_window.w = max(100,text_surface.get_width()+5)
         screen.blit(text_surface,(input_window.x + 5, input_window.y + 5))
         pygame.display.update(input_window)
-                        
-    while phase == 1:
-        config_writer.set_current_phase(phase)
+    
+    ##########job posting phase of the game - phase 1##########
+    while phase == 1:                                   
+        config_writer.set_current_phase(phase)    #remember the current phase
         setting = settings(screen,ingame_song)
         ingame_song.play(-1,fade_ms=1000)
         
@@ -222,8 +234,8 @@ while game_run:    #game_loop
             screen.blit(text_message_phase_1,(360,240))
             
         if instr_linkedout_active:
-            screen.blit(instr_bubble,(630,180))
-            screen.blit(linkedout_ins,(640,195))
+            screen.blit(instr_bubble,(600,170))
+            screen.blit(linkedout_ins,(610,185))
             
         setting_button_rect = screen.blit(setting_button,(850,10))
         pygame.display.update()
@@ -260,9 +272,12 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     desktop_active = True
-        while desktop_active:
-            screen.blit(desk_zoom_in_1,(0,0))
-            screen.blit(computer_screen,(150,40))
+        while desktop_active:                                             ###open laptop
+            if bigtech_thread:
+                screen.blit(desk_zoom_in_1,(0,0))
+            elif startup_thread:
+                screen.blit(desk_zoom_in_2,(0,0))
+            computer_screen_rect = screen.blit(computer_screen,(150,40))
             exit_icon_rect= screen.blit(exit_icon,(682,85))
             if post_transition == False: 
                 post_button_rect = screen.blit(post_button,(408,250))
@@ -287,5 +302,41 @@ while game_run:    #game_loop
                     if post_button_rect.collidepoint(event.pos):
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
+                        choose_position_active = True
+                        
+            while choose_position_active:                               ###choose positions to recruit
+                while white_transition:  #fancy fade in screen
+                    screen.blit(desktop_white,(150,40))
+                    pygame.display.update(computer_screen_rect)
+                    timer_count(3).start_timer()
+                    white_transition = False
+                    
+                screen.blit(desktop_blank,(150,40))
+                intern_button_rect = screen.blit(intern_button,(300,285))
+                mid_button_rect = screen.blit(mid_button,(410,285))
+                senior_button_rect = screen.blit(senior_button,(520,285))
+                screen.blit(exit_icon,(682,85))
+                pygame.display.update(computer_screen_rect)
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()    #quit game
+                        sys.exit()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if intern_button_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                        if mid_button_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                        if senior_button_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                        if exit_icon_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                            choose_position_active = False
+                            desktop_active = False
+                    
     speed.tick(FPS)
             
