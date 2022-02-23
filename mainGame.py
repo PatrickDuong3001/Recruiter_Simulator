@@ -17,7 +17,7 @@ budget = 0
 years_of_experience = 0
 pay_type = [0,1,2,3]      #will influence number of job apps
 job_type = [0,1,2]
-evil_score = 0
+evil_score = 0              #evil score will affect the final score and dialogue choice during the interviews
 
 #screen window setup
 pygame.display.set_caption('Become a Recruiter')  #set the title for the game
@@ -88,9 +88,17 @@ exit_icon = pygame.image.load("data/exit_icon.png").convert_alpha()
 post_button = pygame.image.load("data/post.png").convert_alpha()
 desktop_blank = pygame.image.load("data/desktop_blank.png").convert_alpha()
 desktop_white = pygame.image.load("data/desktop_white.png").convert_alpha()
+back_button = pygame.image.load("data/back_button.png").convert_alpha()
+
+#choose job types and salary set up
 intern_button = pygame.image.load("data/intern.png").convert_alpha()
+intern_unpaid = pygame.image.load("data/unpaid_intern.png").convert_alpha()
+intern_lowpaid = pygame.image.load("data/low_paid_intern.png").convert_alpha()
+intern_highpaid = pygame.image.load("data/high_paid_intern.png").convert_alpha()
 mid_button = pygame.image.load("data/mid.png").convert_alpha()
 senior_button = pygame.image.load("data/senior.png").convert_alpha()
+desktop_intern = pygame.image.load("data/desktop_intern.png").convert_alpha()
+
 
 #control panel
 game_activate = False
@@ -305,13 +313,8 @@ while game_run:    #game_loop
                         choose_position_active = True
                         
             while choose_position_active:                               ###choose positions to recruit
-                while white_transition:  #fancy fade in screen
-                    screen.blit(desktop_white,(150,40))
-                    pygame.display.update(computer_screen_rect)
-                    timer_count(3).start_timer()
-                    white_transition = False
-                    
                 screen.blit(desktop_blank,(150,40))
+                back_button_rect = screen.blit(back_button,(200,85))
                 intern_button_rect = screen.blit(intern_button,(300,285))
                 mid_button_rect = screen.blit(mid_button,(410,285))
                 senior_button_rect = screen.blit(senior_button,(520,285))
@@ -326,17 +329,48 @@ while game_run:    #game_loop
                         if intern_button_rect.collidepoint(event.pos):
                             pygame.mixer.Channel(0).set_volume(setting.get_volume())
                             pygame.mixer.Channel(0).play(click_sound)
+                            intern_thread = True
                         if mid_button_rect.collidepoint(event.pos):
                             pygame.mixer.Channel(0).set_volume(setting.get_volume())
                             pygame.mixer.Channel(0).play(click_sound)
+                            mid_level_thread = True
                         if senior_button_rect.collidepoint(event.pos):
                             pygame.mixer.Channel(0).set_volume(setting.get_volume())
                             pygame.mixer.Channel(0).play(click_sound)
+                            senior_thread = True
+                        if back_button_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                            choose_position_active = False
                         if exit_icon_rect.collidepoint(event.pos):
                             pygame.mixer.Channel(0).set_volume(setting.get_volume())
                             pygame.mixer.Channel(0).play(click_sound)
                             choose_position_active = False
                             desktop_active = False
+                            
+                while intern_thread:                            #intern thread to set up job requirements and generate number of applicants
+                    screen.blit(desktop_intern,(150,40))
+                    screen.blit(back_button,(200,85))
+                    screen.blit(exit_icon,(682,85))
+                    intern_unpaid_rect = screen.blit(intern_unpaid,(350,110))
+                    intern_lowpaid_rect = screen.blit(intern_lowpaid,(450,110))
+                    intern_highpaid_rect = screen.blit(intern_highpaid,(550,110))
+                    pygame.display.update(computer_screen_rect)
                     
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()    #quit game
+                            sys.exit()
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if back_button_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                intern_thread = False
+                            if exit_icon_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                intern_thread = False
+                                choose_position_active = False
+                                desktop_active = False
     speed.tick(FPS)
             
