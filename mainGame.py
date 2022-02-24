@@ -3,6 +3,7 @@ import sys
 import config_file_writer
 from setting_menu import settings
 from timer import timer_count
+from game_engine import num_applicant_generator
 
 #initiate pygame session
 WIDTH = 900
@@ -13,11 +14,14 @@ speed = pygame.time.Clock()
 config_writer = config_file_writer.config_write()
 
 #game variables initiate
+#may need resetting when the game ends
 budget = 0
-years_of_experience = 0
-pay_type = [0,1,2,3]      #will influence number of job apps
-job_type = [0,1,2]
+years_of_experience = None
+pay_type = None #[0,1,2,3]      #will influence number of job apps
+job_type = None #[0,1,2]
+required_skills = []
 evil_score = 0              #evil score will affect the final score and dialogue choice during the interviews
+num_app = 0                 #number of applicants
 
 #screen window setup
 pygame.display.set_caption('Become a Recruiter')  #set the title for the game
@@ -98,13 +102,42 @@ intern_highpaid = pygame.image.load("data/high_paid_intern.png").convert_alpha()
 mid_button = pygame.image.load("data/mid.png").convert_alpha()
 senior_button = pygame.image.load("data/senior.png").convert_alpha()
 desktop_intern = pygame.image.load("data/desktop_intern.png").convert_alpha()
+intern_year_0 = pygame.image.load("data/0_year.png").convert_alpha()
+intern_year_1_4 = pygame.image.load("data/1_4_year.png").convert_alpha()
+intern_year_4 = pygame.image.load("data/4_year.png").convert_alpha()
+c = pygame.image.load("data/c.png").convert_alpha()
+css = pygame.image.load("data/css.png").convert_alpha()
+html = pygame.image.load("data/html.png").convert_alpha()
+java = pygame.image.load("data/java.png").convert_alpha()
+jvs = pygame.image.load("data/jvs.png").convert_alpha()
+mongo = pygame.image.load("data/mongo.png").convert_alpha()
+python = pygame.image.load("data/python.png").convert_alpha()
+vhdl = pygame.image.load("data/vhdl.png").convert_alpha()
+intern_unpaid_shade = pygame.image.load("data/unpaid_intern_shade.png").convert_alpha()
+intern_low_shade = pygame.image.load("data/low_paid_intern_shade.png").convert_alpha()
+intern_high_shade = pygame.image.load("data/high_paid_intern_shade.png").convert_alpha()
+exp_0_shade = pygame.image.load("data/0_year_shade.png").convert_alpha()
+exp_1_4_shade = pygame.image.load("data/1_4_year_shade.png").convert_alpha()
+exp_4_shade = pygame.image.load("data/4_year_shade.png").convert_alpha()
+c_shade = pygame.image.load("data/c_shade.png").convert_alpha()
+css_shade = pygame.image.load("data/css_shade.png").convert_alpha()
+html_shade = pygame.image.load("data/html_shade.png").convert_alpha()
+java_shade = pygame.image.load("data/java_shade.png").convert_alpha()
+jvs_shade = pygame.image.load("data/jvs_shade.png").convert_alpha()
+mongo_shade = pygame.image.load("data/mongo_shade.png").convert_alpha()
+python_shade = pygame.image.load("data/python_shade.png").convert_alpha()
+vhdl_shade = pygame.image.load("data/vhdl_shade.png").convert_alpha()
+submit = pygame.image.load("data/submit.png").convert_alpha()
+submit_rect = submit.get_rect()
 
-
-#control panel
+#control panels may need to be reset after game ends
+#control panel phase 0
 game_activate = False
 game_run = True
 music_active = False
 phase = 0   #phase of recruitment
+
+#control panel phase 1
 bubble_1_active = True
 instr_linkedout_active = False
 desktop_active = False
@@ -114,7 +147,24 @@ intern_thread = False
 mid_level_thread = False
 senior_thread = False
 white_transition = True
-    
+pay_count = False
+exp_count = False
+skills_count = 0
+unpaid_press_intern = False
+lowpaid_press_intern = False
+highpaid_press_intern = False
+exp_0_press = False
+exp_1_4_press = False
+exp_4_press = False
+css_press = False
+java_press = False
+jvs_press = False
+mongo_press = False
+python_press = False
+c_press = False
+vhdl_press = False
+html_press = False
+
 while game_run:    #game_loop    
     while start_screen:
         setting = settings(screen,intro_song)
@@ -293,7 +343,7 @@ while game_run:    #game_loop
             pygame.display.update()
             
             while post_transition:    #fancy fade in post button
-                timer_count(3).start_timer()
+                timer_count(1).start_timer()
                 post_button_rect = screen.blit(post_button,(408,250))
                 pygame.display.update(post_button_rect)
                 post_transition = False
@@ -349,12 +399,60 @@ while game_run:    #game_loop
                             desktop_active = False
                             
                 while intern_thread:                            #intern thread to set up job requirements and generate number of applicants
+                    skills_count = len(required_skills)
                     screen.blit(desktop_intern,(150,40))
                     screen.blit(back_button,(200,85))
                     screen.blit(exit_icon,(682,85))
                     intern_unpaid_rect = screen.blit(intern_unpaid,(350,110))
                     intern_lowpaid_rect = screen.blit(intern_lowpaid,(450,110))
                     intern_highpaid_rect = screen.blit(intern_highpaid,(550,110))
+                    intern_year_0_rect = screen.blit(intern_year_0,(350,195))
+                    intern_year_1_4_rect = screen.blit(intern_year_1_4,(450,195))
+                    intern_year_4_rect = screen.blit(intern_year_4,(550,195))
+                    css_rect = screen.blit(css,(300,250))
+                    vhdl_rect = screen.blit(vhdl,(400,250))
+                    html_rect = screen.blit(html,(500,250))
+                    java_rect = screen.blit(java,(600,250))
+                    c_rect = screen.blit(c,(300,300))
+                    jvs_rect = screen.blit(jvs,(400,300))
+                    mongo_rect = screen.blit(mongo,(500,300))
+                    python_rect = screen.blit(python,(600,300))
+                    
+                    if pay_count:
+                        if unpaid_press_intern:
+                            screen.blit(intern_unpaid_shade,(350,110))
+                        elif lowpaid_press_intern:
+                            screen.blit(intern_low_shade,(450,110))
+                        elif highpaid_press_intern:
+                            screen.blit(intern_high_shade,(550,110))
+                    
+                    if exp_count:
+                        if exp_0_press:
+                            screen.blit(exp_0_shade,(350,195))
+                        elif exp_1_4_press:
+                            screen.blit(exp_1_4_shade,(450,195))
+                        elif exp_4_press:
+                            screen.blit(exp_4_shade,(550,195))
+                    
+                    if c_press: 
+                        screen.blit(c_shade,(300,300))
+                    if css_press:
+                        screen.blit(css_shade,(300,250))
+                    if html_press:
+                        screen.blit(html_shade,(500,250))
+                    if java_press:
+                        screen.blit(java_shade,(600,250))
+                    if jvs_press:
+                        screen.blit(jvs_shade,(400,300))
+                    if mongo_press:
+                        screen.blit(mongo_shade,(500,300))
+                    if python_press:
+                        screen.blit(python_shade,(600,300))
+                    if vhdl_press:
+                        screen.blit(vhdl_shade,(400,250))
+                    if exp_count == True and pay_count == True and skills_count != 0:
+                        submit_rect = screen.blit(submit,(250,85))
+                        
                     pygame.display.update(computer_screen_rect)
                     
                     for event in pygame.event.get():
@@ -372,5 +470,95 @@ while game_run:    #game_loop
                                 intern_thread = False
                                 choose_position_active = False
                                 desktop_active = False
+                            if intern_unpaid_rect.collidepoint(event.pos) and pay_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                job_type = 0
+                                pay_type = 0
+                                pay_count = True
+                                unpaid_press_intern = True
+                            if intern_lowpaid_rect.collidepoint(event.pos) and pay_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                job_type = 0
+                                pay_type = 1
+                                pay_count = True
+                                lowpaid_press_intern = True
+                            if intern_highpaid_rect.collidepoint(event.pos) and pay_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                job_type = 0
+                                pay_type = 2
+                                pay_count = True
+                                highpaid_press_intern = True                             
+                            if intern_year_0_rect.collidepoint(event.pos) and exp_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                exp_0_press = True 
+                                exp_count = True
+                                years_of_experience = 0
+                            if intern_year_1_4_rect.collidepoint(event.pos) and exp_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                exp_1_4_press = True 
+                                exp_count = True
+                                years_of_experience = 2
+                            if intern_year_4_rect.collidepoint(event.pos) and exp_count == False:
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                exp_4_press = True 
+                                exp_count = True
+                                years_of_experience = 6
+                            if css_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                css_press = True
+                                required_skills.append("css")
+                            if c_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                c_press = True                 
+                                required_skills.append("C/C++")
+                            if java_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                java_press = True          
+                                required_skills.append("Java")
+                            if html_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                html_press = True
+                                required_skills.append("HTML")
+                            if jvs_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                jvs_press = True              
+                                required_skills.append("JavaScript") 
+                            if vhdl_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                vhdl_press = True   
+                                required_skills.append("VHDL")
+                            if python_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                python_press = True              
+                                required_skills.append("Python")
+                            if mongo_rect.collidepoint(event.pos):
+                                pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                pygame.mixer.Channel(0).play(click_sound)
+                                mongo_press = True
+                                required_skills.append("MongoDB")
+                            
+                            if exp_count == True and pay_count == True and skills_count != 0:
+                                if submit_rect.collidepoint(event.pos):
+                                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                    pygame.mixer.Channel(0).play(click_sound)
+                                    num_app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score)
+                                   
+                                    print(num_app.return_num_of_applicants())
+                                    print(num_app.evil_result())
+                                    
+                            
     speed.tick(FPS)
             

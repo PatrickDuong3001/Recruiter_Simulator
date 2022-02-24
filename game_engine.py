@@ -2,9 +2,8 @@ from random import randint
 
 class num_applicant_generator():
     #evil score is 0 initially, but will be calculated and returned differently
-    def __init__(self,num_skills,num_exp,pay_amount,job_type,evil_score):   
+    def __init__(self,num_exp,pay_amount,job_type,evil_score):   
         super().__init__()
-        self.skills = num_skills
         self.exp = num_exp
         self.pay = pay_amount
         self.job = job_type
