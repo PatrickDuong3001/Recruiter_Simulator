@@ -2,12 +2,13 @@ from random import randint
 
 class num_applicant_generator():
     #evil score is 0 initially, but will be calculated and returned differently
-    def __init__(self,num_exp,pay_amount,job_type,evil_score):   
+    def __init__(self,num_exp,pay_amount,job_type,evil_score,com_type):   
         super().__init__()
         self.exp = num_exp
         self.pay = pay_amount
         self.job = job_type
         self.evil = evil_score
+        self.company = com_type
     
     def return_num_of_applicants(self):   
         #comprehensively set number of applicants
@@ -39,10 +40,10 @@ class num_applicant_generator():
                     self.evil -= 3
                     return randint(61,100)
                 elif self.exp >= 1 and self.exp < 4:
-                    self.evil -= 2
+                    self.evil -= 1
                     return randint(20,30)
                 elif self.exp >= 4:
-                    self.evil -= 1
+                    self.evil += 1
                     return randint(5,10)
         elif self.job == 1:   #mid-level job
             if self.pay == 0:     #unpaid. level + 8
@@ -50,17 +51,17 @@ class num_applicant_generator():
                 return 0       #obviously
             elif self.pay == 1:   #low-ball pay. level + 5
                 if self.exp < 4: 
-                    self.evil += 5
+                    self.evil += 3
                     return randint(6,15)
                 elif self.exp >= 4: 
-                    self.evil += 6
+                    self.evil += 5
                     return randint(0,5)   
             elif self.pay == 2:   #good pay. level - 4
                 if self.exp < 4:
                     self.evil -= 4
                     return randint(51,100)
                 elif self.exp >= 4:
-                    self.evil -= 3
+                    self.evil -= 2
                     return randint(40,50)
         else:                   #senior-level job
             if self.pay == 0:     #unpaid. level + 12
@@ -77,7 +78,51 @@ class num_applicant_generator():
                     self.evil -= 1
                     return randint(15,30)
                     
-    def evil_result(self):
+    def evil_result(self):      #company's reputation will further affect the evil meter
+        if self.company == 1:   #bigtech
+            if self.job == 0:
+                if self.pay == 0: 
+                    self.evil += 3
+                elif self.pay == 1:
+                    self.evil += 2
+                elif self.pay == 2: 
+                    self.evil -= 4
+            elif self.job == 1:    #mid_level
+                if self.pay == 0: 
+                    self.evil += 4
+                elif self.pay == 1:
+                    self.evil += 3
+                elif self.pay == 2: 
+                    self.evil -= 3
+            elif self.job == 2: 
+                if self.pay == 0: 
+                    self.evil += 5
+                elif self.pay == 1:
+                    self.evil += 4
+                elif self.pay == 2: 
+                    self.evil -= 2
+        elif self.company == 0:     #startup
+            if self.job == 0:
+                if self.pay == 0: 
+                    self.evil += 2
+                elif self.pay == 1:
+                    self.evil += 1
+                elif self.pay == 2: 
+                    self.evil -= 5
+            elif self.job == 1:    #mid_level
+                if self.pay == 0: 
+                    self.evil += 3
+                elif self.pay == 1:
+                    self.evil += 2
+                elif self.pay == 2: 
+                    self.evil -= 4
+            elif self.job == 2: 
+                if self.pay == 0: 
+                    self.evil += 4
+                elif self.pay == 1:
+                    self.evil += 3
+                elif self.pay == 2: 
+                    self.evil -= 3
         return self.evil          
     
             

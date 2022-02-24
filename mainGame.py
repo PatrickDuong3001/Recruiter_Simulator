@@ -26,6 +26,7 @@ num_app = 0                 #number of applicants
 #screen window setup
 pygame.display.set_caption('Become a Recruiter')  #set the title for the game
 screen = pygame.display.set_mode((WIDTH,HEIGHT)) #create the game screen
+money_stack = pygame.image.load("data/money_stack.png").convert_alpha()
 
 #all songs
 intro_song = pygame.mixer.Sound("data/intro_song.mp3")
@@ -46,6 +47,7 @@ info = pygame.font.Font("data/arial.TTF",15)
 name = info.render("Patrick & Quan",False,"White")
 title_start = pygame.font.Font("data/animation.TTF",40)
 title = title_start.render("Recruiter Simulator",False,"#48dcff")
+back_guide = pygame.image.load("data/back_button_guide.png").convert_alpha()
 
 #choose mode screen set up
 startup_image = pygame.image.load("data/pingpong.jpg").convert_alpha()
@@ -93,12 +95,16 @@ post_button = pygame.image.load("data/post.png").convert_alpha()
 desktop_blank = pygame.image.load("data/desktop_blank.png").convert_alpha()
 desktop_white = pygame.image.load("data/desktop_white.png").convert_alpha()
 back_button = pygame.image.load("data/back_button.png").convert_alpha()
+money_font = pygame.font.Font("data/animation.TTF",15)
+
 
 #choose job types and salary set up
 intern_button = pygame.image.load("data/intern.png").convert_alpha()
 intern_unpaid = pygame.image.load("data/unpaid_intern.png").convert_alpha()
-intern_lowpaid = pygame.image.load("data/low_paid_intern.png").convert_alpha()
-intern_highpaid = pygame.image.load("data/high_paid_intern.png").convert_alpha()
+intern_lowpaid_startup = pygame.image.load("data/low_paid_intern_startup.png").convert_alpha()
+intern_lowpaid_bigtech = pygame.image.load("data/low_paid_intern_bigtech.png").convert_alpha()
+intern_highpaid_startup = pygame.image.load("data/high_paid_intern_startup.png").convert_alpha()
+intern_highpaid_bigtech = pygame.image.load("data/high_paid_intern_bigtech.png").convert_alpha()
 mid_button = pygame.image.load("data/mid.png").convert_alpha()
 senior_button = pygame.image.load("data/senior.png").convert_alpha()
 desktop_intern = pygame.image.load("data/desktop_intern.png").convert_alpha()
@@ -114,8 +120,10 @@ mongo = pygame.image.load("data/mongo.png").convert_alpha()
 python = pygame.image.load("data/python.png").convert_alpha()
 vhdl = pygame.image.load("data/vhdl.png").convert_alpha()
 intern_unpaid_shade = pygame.image.load("data/unpaid_intern_shade.png").convert_alpha()
-intern_low_shade = pygame.image.load("data/low_paid_intern_shade.png").convert_alpha()
-intern_high_shade = pygame.image.load("data/high_paid_intern_shade.png").convert_alpha()
+intern_low_startup_shade = pygame.image.load("data/low_paid_intern_startup_shade.png").convert_alpha()
+intern_low_bigtech_shade = pygame.image.load("data/low_paid_intern_bigtech_shade.png").convert_alpha()
+intern_high_startup_shade = pygame.image.load("data/high_paid_intern_startup_shade.png").convert_alpha()
+intern_high_bigtech_shade = pygame.image.load("data/high_paid_intern_bigtech_shade.png").convert_alpha()
 exp_0_shade = pygame.image.load("data/0_year_shade.png").convert_alpha()
 exp_1_4_shade = pygame.image.load("data/1_4_year_shade.png").convert_alpha()
 exp_4_shade = pygame.image.load("data/4_year_shade.png").convert_alpha()
@@ -130,12 +138,13 @@ vhdl_shade = pygame.image.load("data/vhdl_shade.png").convert_alpha()
 submit = pygame.image.load("data/submit.png").convert_alpha()
 submit_rect = submit.get_rect()
 
-#control panels may need to be reset after game ends
+#MAJORITY of control panels may need to be reset after game ends
 #control panel phase 0
 game_activate = False
 game_run = True
 music_active = False
 phase = 0   #phase of recruitment
+guide_activate = False
 
 #control panel phase 1
 bubble_1_active = True
@@ -164,6 +173,7 @@ python_press = False
 c_press = False
 vhdl_press = False
 html_press = False
+money_deduct = True
 
 while game_run:    #game_loop    
     while start_screen:
@@ -192,13 +202,29 @@ while game_run:    #game_loop
                 elif guide_button_rect.collidepoint(event.pos):   #click in Guide button
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                    print("Hello")
-                    pygame.quit()    #quit game
-                    sys.exit()
+                    guide_activate = True
+                    start_screen = False
                 elif setting_button_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                    setting.run_setting()                 
+                    setting.run_setting()   
+    
+    while guide_activate: 
+        screen.fill("#48dcff")
+        back_guide_rect = screen.blit(back_guide,(10,10))
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()     
+            if event.type == pygame.MOUSEBUTTONDOWN:        
+                if back_guide_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    guide_activate = False 
+                    start_screen = True
+                  
     while game_activate:        
         screen.fill("#48dcff")
         startup_rect= screen.blit(startup_image,(175,165))
@@ -270,7 +296,8 @@ while game_run:    #game_loop
         pygame.display.update(input_window)
     
     ##########job posting phase of the game - phase 1##########
-    while phase == 1:                                   
+    while phase == 1:                   
+        money_info = money_font.render(f"{budget}",True,"Green")                        
         config_writer.set_current_phase(phase)    #remember the current phase
         setting = settings(screen,ingame_song)
         ingame_song.play(-1,fade_ms=1000)
@@ -295,6 +322,8 @@ while game_run:    #game_loop
             screen.blit(instr_bubble,(600,170))
             screen.blit(linkedout_ins,(610,185))
             
+        screen.blit(money_stack,(10,10))
+        screen.blit(money_info,(60,20))
         setting_button_rect = screen.blit(setting_button,(850,10))
         pygame.display.update()
         
@@ -404,8 +433,13 @@ while game_run:    #game_loop
                     screen.blit(back_button,(200,85))
                     screen.blit(exit_icon,(682,85))
                     intern_unpaid_rect = screen.blit(intern_unpaid,(350,110))
-                    intern_lowpaid_rect = screen.blit(intern_lowpaid,(450,110))
-                    intern_highpaid_rect = screen.blit(intern_highpaid,(550,110))
+                    
+                    if startup_thread: 
+                        intern_lowpaid_rect = screen.blit(intern_lowpaid_startup,(450,110))
+                        intern_highpaid_rect = screen.blit(intern_highpaid_startup,(550,110))
+                    if bigtech_thread: 
+                        intern_lowpaid_rect = screen.blit(intern_lowpaid_bigtech,(450,110))
+                        intern_highpaid_rect = screen.blit(intern_highpaid_bigtech,(550,110))
                     intern_year_0_rect = screen.blit(intern_year_0,(350,195))
                     intern_year_1_4_rect = screen.blit(intern_year_1_4,(450,195))
                     intern_year_4_rect = screen.blit(intern_year_4,(550,195))
@@ -419,12 +453,34 @@ while game_run:    #game_loop
                     python_rect = screen.blit(python,(600,300))
                     
                     if pay_count:
-                        if unpaid_press_intern:
-                            screen.blit(intern_unpaid_shade,(350,110))
-                        elif lowpaid_press_intern:
-                            screen.blit(intern_low_shade,(450,110))
-                        elif highpaid_press_intern:
-                            screen.blit(intern_high_shade,(550,110))
+                        if startup_thread: 
+                            if unpaid_press_intern:
+                                budget -= 0                 #does not pay, so budget same
+                                screen.blit(intern_unpaid_shade,(350,110))
+                            elif lowpaid_press_intern:
+                                if money_deduct:
+                                    budget -= 5250
+                                    money_deduct = False 
+                                screen.blit(intern_low_startup_shade,(450,110))
+                            elif highpaid_press_intern:
+                                if money_deduct:
+                                    budget -= 26250
+                                    money_deduct = False
+                                screen.blit(intern_high_startup_shade,(550,110))
+                        elif bigtech_thread: 
+                            if unpaid_press_intern:
+                                budget -= 0
+                                screen.blit(intern_unpaid_shade,(350,110))
+                            elif lowpaid_press_intern:
+                                if money_deduct:
+                                    budget -= 12501
+                                    money_deduct = False 
+                                screen.blit(intern_low_bigtech_shade,(450,110))
+                            elif highpaid_press_intern:
+                                if money_deduct:
+                                    budget -= 42000
+                                    money_deduct = False
+                                screen.blit(intern_high_bigtech_shade,(550,110))
                     
                     if exp_count:
                         if exp_0_press:
@@ -552,12 +608,14 @@ while game_run:    #game_loop
                             
                             if exp_count == True and pay_count == True and skills_count != 0:
                                 if submit_rect.collidepoint(event.pos):
-                                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
-                                    pygame.mixer.Channel(0).play(click_sound)
-                                    num_app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score)
-                                   
-                                    print(num_app.return_num_of_applicants())
-                                    print(num_app.evil_result())
+                                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                        pygame.mixer.Channel(0).play(click_sound)
+                                        if startup_thread: 
+                                            num_app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score,com_type=0)
+                                        elif bigtech_thread:
+                                            num_app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score,com_type=1)
+                                        print(num_app.return_num_of_applicants())
+                                        print(num_app.evil_result())
                                     
                             
     speed.tick(FPS)
