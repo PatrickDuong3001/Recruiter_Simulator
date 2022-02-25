@@ -65,7 +65,7 @@ class num_applicant_generator():
                     return randint(40,50)
         else:                   #senior-level job
             if self.pay == 0:     #unpaid. level + 12
-                self.evil += 12
+                self.evil += 10
                 return 0       #obviously
             elif self.pay == 1:   #low-ball pay. level + 8
                 self.evil += 8
