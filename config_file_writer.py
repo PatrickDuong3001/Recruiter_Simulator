@@ -33,3 +33,19 @@ class config_write():
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
     
+    def set_current_evil_meter(self,evil):
+        '''
+        write the current evil meter of recruitment to the config file
+        '''
+        self.config.set("saved_session","evil_meter",str(evil))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+            
+    def set_current_skills(self,skills):
+        '''
+        write the current skill list of recruitment to the config file
+        '''
+        self.config.set("saved_session","skills",str(skills))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
