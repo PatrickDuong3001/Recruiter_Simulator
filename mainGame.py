@@ -16,6 +16,7 @@ config_writer = config_file_writer.config_write()
 
 #game variables initiate
 #may need resetting when the game ends
+name = ""
 budget = 0
 years_of_experience = None
 pay_type = None #[0,1,2,3]      #will influence number of job apps
@@ -206,6 +207,7 @@ money_deduct = True
 while game_run:    #game_loop    
     while start_screen:
         setting = settings(screen,intro_song)
+        loads = game_loading(screen,click_sound)
         screen.blit(start_image,(0,0))
         start_button_rect = screen.blit(start_button,(390,80))
         guide_button_rect = screen.blit(guide_button,(240,80))
@@ -223,7 +225,7 @@ while game_run:    #game_loop
                 pygame.quit()    #quit game
                 sys.exit()
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
-                if start_button_rect.collidepoint(event.pos):     #click on Start button
+                if start_button_rect.collidepoint(event.pos):     #click on Start button. Start button means start new game, all saved sessions will be erased
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     start_screen = False
@@ -240,8 +242,16 @@ while game_run:    #game_loop
                 elif load_button_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                    
-                        
+                    loads.run_loading()
+                    if loads.get_back_status() == False:
+                        phase = loads.get_phase()
+                        startup_thread = loads.get_startup_status()
+                        bigtech_thread = loads.get_bigtech_status()
+                        intro_song.stop()
+                        budget = loads.get_initial_budget()
+                        start_screen = False
+                        game_activate = False
+                                            
     while guide_activate: 
         screen.fill("#48dcff")
         screen.blit(recruiter_guide,(100,50))
@@ -301,7 +311,7 @@ while game_run:    #game_loop
                         config_writer.set_initial_budget(budget)     #inital budget will never change
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
-                        config_writer.set_company_type(0)
+                        config_writer.choose_startup()
                         game_activate = False
                         phase = 1
                         startup_thread = True
@@ -319,7 +329,7 @@ while game_run:    #game_loop
                         config_writer.set_initial_budget(budget)
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
-                        config_writer.set_company_type(1)
+                        config_writer.choose_bigtech()
                         game_activate = False
                         phase = 1
                         bigtech_thread = True
@@ -1043,8 +1053,8 @@ while game_run:    #game_loop
                                         elif bigtech_thread:
                                             app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score,com_type=1)
                                         num_app = app.return_num_of_applicants()
+                                        config_writer.set_num_app(num_app)
                                         evil_result = app.evil_result()
-                                        
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills)) 
                                         phase = 2

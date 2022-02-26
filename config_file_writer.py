@@ -57,11 +57,29 @@ class config_write():
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
             
-    def set_company_type(self,com_type): 
+    def choose_startup(self): 
         '''
-        write the company type you choose to the config file
+        if the user chooses startup, then reflect that in the config file
         '''
-        self.config.set("saved_session","company_type",str(com_type))
+        self.config.set("saved_session","startup","True")
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
+    
+    def choose_bigtech(self):
+        '''
+        if the user chooses bigtech, then reflec that in the config file
+        '''
+        self.config.set("saved_session","bigtech","True")
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+
+    def set_num_app(self,num):
+        '''
+        set number of applicants
+        '''
+        self.config.set("saved_session","num_app",str(num))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+        
+        
     
