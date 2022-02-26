@@ -204,6 +204,9 @@ vhdl_press = False
 html_press = False
 money_deduct = True
 
+def new_game_warn(self):
+    pass
+
 while game_run:    #game_loop    
     while start_screen:
         setting = settings(screen,intro_song)
@@ -218,7 +221,9 @@ while game_run:    #game_loop
         screen.blit(title,(160,20))
         
         pygame.display.update()
-        intro_song.play(-1)
+        
+        if pygame.mixer.music.get_busy() == False:
+            intro_song.play(-1)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -280,7 +285,7 @@ while game_run:    #game_loop
         screen.fill("#48dcff")
         startup_rect= screen.blit(startup_image,(175,165))
         bigtech_rect = screen.blit(big_tect_image,(475,165))
-        back_guide_rect = screen.blit(back_guide,(10,10))
+        back_start_rect = screen.blit(back_guide,(10,10))
         pygame.draw.rect(screen,pygame.Color("#ADD8E6"),input_window)
         screen.blit(user_require,(360,430))
         screen.blit(title_mode_screen,(65,40))
@@ -298,7 +303,7 @@ while game_run:    #game_loop
                 sys.exit()                
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
                 inputed = False
-                if back_guide_rect.collidepoint(event.pos):
+                if back_start_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     game_activate = False
