@@ -4,6 +4,7 @@ import config_file_writer
 from setting_menu import settings
 from timer import timer_count
 from game_engine import num_applicant_generator
+from load_game import game_loading
 
 #initiate pygame session
 WIDTH = 900
@@ -43,6 +44,7 @@ start_screen = True
 start_button = pygame.image.load("data/start_button.png").convert_alpha()
 guide_button = pygame.image.load("data/guide_button.png").convert_alpha()
 setting_button = pygame.image.load("data/setting_button.png").convert_alpha()
+load_button = pygame.image.load("data/load_button.png").convert_alpha()
 info = pygame.font.Font("data/arial.TTF",15)
 name = info.render("Patrick & Quan",False,"White")
 title_start = pygame.font.Font("data/animation.TTF",40)
@@ -205,8 +207,9 @@ while game_run:    #game_loop
     while start_screen:
         setting = settings(screen,intro_song)
         screen.blit(start_image,(0,0))
-        start_button_rect = screen.blit(start_button,(300,80))
-        guide_button_rect = screen.blit(guide_button,(450,80))
+        start_button_rect = screen.blit(start_button,(390,80))
+        guide_button_rect = screen.blit(guide_button,(240,80))
+        load_button_rect = screen.blit(load_button,(540,80))
         setting_button_rect = screen.blit(setting_button,(850,450))
         
         screen.blit(name,(310,470))
@@ -234,7 +237,11 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     setting.run_setting()   
-    
+                elif load_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    
+                        
     while guide_activate: 
         screen.fill("#48dcff")
         screen.blit(recruiter_guide,(100,50))
@@ -291,8 +298,10 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).play(click_sound)
                     if len(user_text) != 0:
                         budget = 160000  
+                        config_writer.set_initial_budget(budget)     #inital budget will never change
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
+                        config_writer.set_company_type(0)
                         game_activate = False
                         phase = 1
                         startup_thread = True
@@ -307,8 +316,10 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).play(click_sound)
                     if len(user_text) != 0:
                         budget = 360000  
+                        config_writer.set_initial_budget(budget)
                         config_writer.set_current_budget(budget)
                         config_writer.set_current_name(user_text)
+                        config_writer.set_company_type(1)
                         game_activate = False
                         phase = 1
                         bigtech_thread = True
@@ -660,6 +671,7 @@ while game_run:    #game_loop
                                         
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills))
+                                        phase = 2
                                         
                 while mid_level_thread:                            #mid-level thread to set up job requirements and generate number of applicants
                     skills_count = len(required_skills)
@@ -846,7 +858,8 @@ while game_run:    #game_loop
                                         evil_result = app.evil_result()
                                         
                                         config_writer.set_current_evil_meter(evil_result)
-                                        config_writer.set_current_skills(", ".join(required_skills))                       
+                                        config_writer.set_current_skills(", ".join(required_skills))   
+                                        phase = 2                    
                                     
                 while senior_thread:                            #mid-level thread to set up job requirements and generate number of applicants
                     skills_count = len(required_skills)
@@ -1034,6 +1047,11 @@ while game_run:    #game_loop
                                         
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills)) 
-                            
+                                        phase = 2
+    
+     ##########resume screening phase of the game - phase 2##########
+    while phase == 2: 
+        pass
+                                
     speed.tick(FPS)
             

@@ -48,4 +48,20 @@ class config_write():
         self.config.set("saved_session","skills",str(skills))
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
+        
+    def set_initial_budget(self,initial): 
+        '''
+        write the initial budget of recruitment to the config file
+        '''
+        self.config.set("saved_session","initial_budget",str(initial))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+            
+    def set_company_type(self,com_type): 
+        '''
+        write the company type you choose to the config file
+        '''
+        self.config.set("saved_session","company_type",str(com_type))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
     
