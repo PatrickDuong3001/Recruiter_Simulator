@@ -84,7 +84,7 @@ class game_loading():
         return False
     
     def get_initial_budget(self):
-        return self.config.get("saved_session","initial_budget")
+        return int(self.config.get("saved_session","initial_budget"))
 
     def get_phase(self):
         return self.phase

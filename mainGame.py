@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 import pygame
 import sys
 import config_file_writer
@@ -38,6 +39,11 @@ ingame_song.set_volume(0.1)
 
 #all sound effects:
 click_sound = pygame.mixer.Sound("data/click_effect.mp3")
+
+#new game warn set up
+yes_button = pygame.image.load("data/Yes.png").convert_alpha()
+no_button = pygame.image.load("data/No.png").convert_alpha()
+warn_save = pygame.image.load("data/warn_save.png").convert_alpha()
 
 #start game screen setup
 start_image = pygame.image.load("data/start_screen.png").convert()
@@ -204,9 +210,36 @@ vhdl_press = False
 html_press = False
 money_deduct = True
 
-def new_game_warn(self):
-    pass
-
+def new_game_warn():    #activate a warn window when the user want to start a new game
+    warn_activate = True
+    start_option = False
+    while warn_activate:
+        screen.blit(warn_save,(270,180))
+        yes_button_rect = screen.blit(yes_button,(300,320))
+        no_button_rect = screen.blit(no_button,(500,320))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if yes_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    config_writer.delete_all_saved_data()
+                    start_option = True
+                    warn_activate = False
+                elif no_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    warn_activate = False
+    return start_option
+        
+def read_phase_verify():           #help read saved data for new_game_warn()
+    config = ConfigParser()
+    config.read("data/game_variables.cfg")
+    return int(config.get("saved_session","phase"))
+    
 while game_run:    #game_loop    
     while start_screen:
         setting = settings(screen,intro_song)
@@ -230,11 +263,16 @@ while game_run:    #game_loop
                 pygame.quit()    #quit game
                 sys.exit()
             if event.type  == pygame.MOUSEBUTTONDOWN:       #all click event happens here
-                if start_button_rect.collidepoint(event.pos):     #click on Start button. Start button means start new game, all saved sessions will be erased
+                if start_button_rect.collidepoint(event.pos):     #click on Start button. Start button means start new game, all saved sessions will be erased                        
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                    start_screen = False
-                    game_activate = True
+                    if read_phase_verify() != 0:          #the game does not have any previous data
+                        if new_game_warn(): 
+                            start_screen = False
+                            game_activate = True
+                    else:
+                        start_screen = False
+                        game_activate = True
                 elif guide_button_rect.collidepoint(event.pos):   #click in Guide button
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
@@ -686,6 +724,9 @@ while game_run:    #game_loop
                                         
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills))
+                                        intern_thread = False
+                                        choose_position_active = False
+                                        desktop_active = False
                                         phase = 2
                                         
                 while mid_level_thread:                            #mid-level thread to set up job requirements and generate number of applicants
@@ -874,6 +915,9 @@ while game_run:    #game_loop
                                         
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills))   
+                                        mid_level_thread = False
+                                        choose_position_active = False
+                                        desktop_active = False
                                         phase = 2                    
                                     
                 while senior_thread:                            #mid-level thread to set up job requirements and generate number of applicants
@@ -1062,11 +1106,18 @@ while game_run:    #game_loop
                                         evil_result = app.evil_result()
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills)) 
+                                        senior_thread = False
+                                        choose_position_active = False
+                                        desktop_active = False
                                         phase = 2
     
      ##########resume screening phase of the game - phase 2##########
     while phase == 2: 
-        pass
+        print("pass")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()
                                 
     speed.tick(FPS)
             
