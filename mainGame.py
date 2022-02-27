@@ -6,6 +6,7 @@ from setting_menu import settings
 from timer import timer_count
 from game_engine import num_applicant_generator
 from load_game import game_loading
+from fast_forward import fast_forward_animation
 
 #initiate pygame session
 WIDTH = 900
@@ -36,9 +37,16 @@ intro_song = pygame.mixer.Sound("data/intro_song.mp3")
 intro_song.set_volume(0.1)
 ingame_song = pygame.mixer.Sound("data/ingame_song.mp3")
 ingame_song.set_volume(0.1)
+phase_2_song = pygame.mixer.Sound("data/phase_2_song.mp3")
+phase_2_song.set_volume(0.1)
 
 #all sound effects:
 click_sound = pygame.mixer.Sound("data/click_effect.mp3")
+clock_fast_sound = pygame.mixer.Sound("data/fast_forward.mp3")
+clock_fast_sound.set_volume(0.1)
+
+#fast forward transition initiation
+fast_forwarder = fast_forward_animation(screen,clock_fast_sound)
 
 #new game warn set up
 yes_button = pygame.image.load("data/Yes.png").convert_alpha()
@@ -180,6 +188,7 @@ game_run = True
 music_active = False
 phase = 0   #phase of recruitment
 guide_activate = False
+fast_forward_transition = False
 
 #control panel phase 1
 bubble_1_active = True
@@ -727,6 +736,7 @@ while game_run:    #game_loop
                                         intern_thread = False
                                         choose_position_active = False
                                         desktop_active = False
+                                        fast_forward_transition = True
                                         phase = 2
                                         
                 while mid_level_thread:                            #mid-level thread to set up job requirements and generate number of applicants
@@ -918,6 +928,7 @@ while game_run:    #game_loop
                                         mid_level_thread = False
                                         choose_position_active = False
                                         desktop_active = False
+                                        fast_forward_transition = True
                                         phase = 2                    
                                     
                 while senior_thread:                            #mid-level thread to set up job requirements and generate number of applicants
@@ -1109,11 +1120,18 @@ while game_run:    #game_loop
                                         senior_thread = False
                                         choose_position_active = False
                                         desktop_active = False
+                                        fast_forward_transition = True
                                         phase = 2
-    
-     ##########resume screening phase of the game - phase 2##########
+        while fast_forward_transition:
+            ingame_song.stop()
+            fast_forwarder.run_fast_forward()
+            fast_forward_transition = False
+    ##########resume screening phase of the game - phase 2##########
     while phase == 2: 
-        print("pass")
+        phase_2_song.play(-1,fade_ms=3000)
+        
+        screen.fill("#48dcff")
+        pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()    #quit game
