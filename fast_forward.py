@@ -3,10 +3,11 @@ import sys
 from timer import timer_count
 
 class fast_forward_animation(pygame.sprite.Sprite):
-    def __init__(self,scr,snd):
+    def __init__(self,scr,snd,eff):
         super().__init__()
         self.screen = scr
         self.sound = snd       
+        self.effect = eff
         self.pos_x = -200
         self.fast_arrow = pygame.image.load("data/forward.png").convert_alpha()
         self.forward_font = pygame.font.Font("data/animation.TTF",55)
@@ -37,6 +38,7 @@ class fast_forward_animation(pygame.sprite.Sprite):
         self.screen.fill("Black")
         pygame.display.update()
         timer_count(2).start_timer()
+        self.effect.play()
         self.screen.blit(self.announce,(130,160))
         pygame.display.update()
         timer_count(2).start_timer()

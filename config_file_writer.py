@@ -80,7 +80,59 @@ class config_write():
         self.config.set("saved_session","num_app",str(num))
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
-            
+    
+    def set_current_pay(self,com_type,level,pay_type):
+        '''
+        set the current salary you choose to offer
+        '''
+        if com_type == 0:     #startup
+            if level == 0:    #intern
+                if pay_type == 0: #unpaid
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:  #low
+                    self.config.set("saved_session","pay","$10/h")
+                elif pay_type == 2:  #high
+                    self.config.set("saved_session","pay","$50/h")
+            elif level == 1:    #mid-level
+                if pay_type == 0:  
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:
+                    self.config.set("saved_session","pay","$20/h")
+                elif pay_type == 2:
+                    self.config.set("saved_session","pay","$60/h")
+            elif level == 2:    #senior
+                if pay_type == 0:  
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:
+                    self.config.set("saved_session","pay","$30/h")
+                elif pay_type == 2:
+                    self.config.set("saved_session","pay","$70/h")
+        elif com_type == 1:
+            if level == 0:    #intern
+                if pay_type == 0: #unpaid
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:  #low
+                    self.config.set("saved_session","pay","$25/h")
+                elif pay_type == 2:  #high
+                    self.config.set("saved_session","pay","$80/h")
+            elif level == 1:   #mid-level
+                if pay_type == 0:  
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:
+                    self.config.set("saved_session","pay","$35/h")
+                elif pay_type == 2:
+                    self.config.set("saved_session","pay","$90/h")
+            elif level == 2:    #senior
+                if pay_type == 0:  
+                    self.config.set("saved_session","pay","Exposure")
+                elif pay_type == 1:
+                    self.config.set("saved_session","pay","$45/h")
+                elif pay_type == 2:
+                    self.config.set("saved_session","pay","$100/h")
+        
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
     def delete_all_saved_data(self):
         '''
         set all the variables inside 'saved session' to default values

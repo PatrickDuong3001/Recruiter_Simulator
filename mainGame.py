@@ -45,10 +45,13 @@ phase_2_song.set_volume(0.1)
 click_sound = pygame.mixer.Sound("data/click_effect.mp3")
 clock_fast_sound = pygame.mixer.Sound("data/fast_forward.mp3")
 clock_fast_sound.set_volume(0.1)
+three_week_sound = pygame.mixer.Sound("data/three_week.mp3")
+three_week_sound.set_volume(0.1)
 
 #all animation initiations
-fast_forwarder = fast_forward_animation(screen,clock_fast_sound)
-tablet_mover = tablet_animation(screen,click_sound)
+fast_forwarder = fast_forward_animation(screen,clock_fast_sound,three_week_sound)
+#tablet_mover = tablet_animation(screen,click_sound)
+
 
 #new game warn set up
 yes_button = pygame.image.load("data/Yes.png").convert_alpha()
@@ -185,6 +188,12 @@ submit_rect = submit.get_rect()
 
 #resume screen set up
 tablet = pygame.image.load("data/tablet_linked.png").convert_alpha()
+thought_2 = pygame.image.load("data/bubble_2.png").convert_alpha()
+next_button = pygame.image.load("data/next.png").convert_alpha()
+thought_text_font = pygame.font.Font("data/arial.TTF",25)
+though_text_1 = thought_text_font.render("3 weeks already passed",True,"Black")
+though_text_2 = thought_text_font.render("Let's harvest the talents!",True,"Black")
+though_text_3 = thought_text_font.render("I need to check the resume stack",True,"Black")
 
 
 #MAJORITY of control panels may need to be reset after game ends
@@ -227,6 +236,9 @@ money_deduct = True
 
 #control panel phase 2:
 tablet_transition = True
+bubble_2_active = True
+bubble_2_1_active = True
+wait_active = True
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1139,21 +1151,75 @@ while game_run:    #game_loop
             
     ##########resume screening phase of the game - phase 2##########
     while phase == 2: 
-        phase_2_song.play(-1,fade_ms=3000)
+        setting = settings(screen,phase_2_song)
+        config_writer.set_current_phase(2)
+        
         if startup_thread:
             screen.blit(start_up_environment,(0,0))
         elif bigtech_thread:
             screen.blit(big_tech_environment,(0,0))
+        setting_button_rect = screen.blit(setting_button,(850,10))
+        wait_active = True
+
+        while bubble_2_active:
+            if wait_active:
+                pygame.display.update()
+                timer_count(3).start_timer()
+                wait_active = False
+            thought_2_rect = screen.blit(thought_2,(230,0))
+            screen.blit(though_text_1,(300,120))
+            screen.blit(though_text_2,(360,170))
+            pygame.display.update()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()    #quit game
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if thought_2_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
+                        while bubble_2_1_active: 
+                            screen.blit(thought_2,(230,0))
+                            screen.blit(though_text_3,(280,150))
+                            pygame.display.update(thought_2_rect)
+                            for event in pygame.event.get():
+                                if event.type == pygame.QUIT:
+                                    pygame.quit()    #quit game
+                                    sys.exit()
+                                if event.type == pygame.MOUSEBUTTONDOWN:
+                                    if thought_2_rect.collidepoint(event.pos):
+                                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                        pygame.mixer.Channel(0).play(click_sound)
+                                        bubble_2_active = False
+                                        bubble_2_1_active = False        
+                        
         if tablet_transition:
+            tablet_mover = tablet_animation(screen,click_sound)
             tablet_mover.tablet_move()
             tablet_transition = False
-        
+            
+        phase_2_song.play(-1,fade_ms=1000)
+        if setting.get_music_status() == False: 
+            phase_2_song.set_volume(0.1)
+        else: 
+            phase_2_song.set_volume(0)
+            
         screen.blit(tablet,(0,-15))
+        next_button_rect = screen.blit(next_button,(645,110))
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()    #quit game
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if setting_button_rect.collidepoint(event.pos):  
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    setting.run_setting()
+                if next_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
                                 
     speed.tick(FPS)
             
