@@ -7,6 +7,7 @@ from timer import timer_count
 from game_engine import num_applicant_generator
 from load_game import game_loading
 from fast_forward import fast_forward_animation
+from tablet_animation import tablet_animation
 
 #initiate pygame session
 WIDTH = 900
@@ -45,8 +46,9 @@ click_sound = pygame.mixer.Sound("data/click_effect.mp3")
 clock_fast_sound = pygame.mixer.Sound("data/fast_forward.mp3")
 clock_fast_sound.set_volume(0.1)
 
-#fast forward transition initiation
+#all animation initiations
 fast_forwarder = fast_forward_animation(screen,clock_fast_sound)
+tablet_mover = tablet_animation(screen,click_sound)
 
 #new game warn set up
 yes_button = pygame.image.load("data/Yes.png").convert_alpha()
@@ -181,6 +183,10 @@ vhdl_shade = pygame.image.load("data/vhdl_shade.png").convert_alpha()
 submit = pygame.image.load("data/submit.png").convert_alpha()
 submit_rect = submit.get_rect()
 
+#resume screen set up
+tablet = pygame.image.load("data/tablet_linked.png").convert_alpha()
+
+
 #MAJORITY of control panels may need to be reset after game ends
 #control panel phase 0
 game_activate = False
@@ -218,6 +224,9 @@ c_press = False
 vhdl_press = False
 html_press = False
 money_deduct = True
+
+#control panel phase 2:
+tablet_transition = True
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1126,11 +1135,20 @@ while game_run:    #game_loop
             ingame_song.stop()
             fast_forwarder.run_fast_forward()
             fast_forward_transition = False
+            tablet_transition = True
+            
     ##########resume screening phase of the game - phase 2##########
     while phase == 2: 
         phase_2_song.play(-1,fade_ms=3000)
+        if startup_thread:
+            screen.blit(start_up_environment,(0,0))
+        elif bigtech_thread:
+            screen.blit(big_tech_environment,(0,0))
+        if tablet_transition:
+            tablet_mover.tablet_move()
+            tablet_transition = False
         
-        screen.fill("#48dcff")
+        screen.blit(tablet,(0,-15))
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
