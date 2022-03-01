@@ -1279,10 +1279,14 @@ while game_run:    #game_loop
         screen.blit(tablet,(0,-15))
         screen.blit(level_text,(330,176))
         screen.blit(salary_text,(330,260))
-        screen.blit(skills_text,(214,390))
+        
+        if len(required_skills) >= 7:
+            screen.blit(skills_text,(214,390))
+        elif len(required_skills) <= 6:
+            screen.blit(skills_text,(295,356))
+            
         next_button_rect = screen.blit(next_button,(640,108))
         pygame.display.update()
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()    #quit game
