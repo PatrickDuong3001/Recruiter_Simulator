@@ -8,6 +8,7 @@ from game_engine import num_applicant_generator
 from load_game import game_loading
 from fast_forward import fast_forward_animation
 from tablet_animation import tablet_animation
+from warn_countdown import warn_countdowner
 
 #initiate pygame session
 WIDTH = 900
@@ -1289,5 +1290,7 @@ while game_run:    #game_loop
                     elif start_review_rect.collidepoint(event.pos):
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
+                        warn_countdowner(screen,phase_2_song).start_warn_counter()
+                        
     speed.tick(FPS)
             
