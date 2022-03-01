@@ -667,12 +667,20 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 intern_thread = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if exit_icon_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 intern_thread = False
                                 choose_position_active = False
                                 desktop_active = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if intern_unpaid_rect.collidepoint(event.pos) and pay_count == False:
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
@@ -874,12 +882,20 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 mid_level_thread = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if exit_icon_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 mid_level_thread = False
                                 choose_position_active = False
                                 desktop_active = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if mid_unpaid_rect.collidepoint(event.pos) and pay_count == False:
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
@@ -1075,12 +1091,20 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 senior_thread = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if exit_icon_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 senior_thread = False
                                 choose_position_active = False
                                 desktop_active = False
+                                pay_count = False
+                                exp_count = False
+                                c_press = css_press = html_press = java_press = jvs_press = mongo_press = python_press = vhdl_press = False
+                                required_skills.clear()
                             if senior_unpaid_rect.collidepoint(event.pos) and pay_count == False:
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)

@@ -24,37 +24,37 @@ class warn_countdowner():
         
     def start_warn_counter(self):
         while self.active:
-            warn_rect = self.screen.blit(self.warn_1,(300,200))
+            warn_rect = self.screen.blit(self.warn_1,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
+            timer_count(3).start_timer()
             
-            self.screen.blit(self.warn_2,(300,200))
+            self.screen.blit(self.warn_2,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
-            
-            pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
-            pygame.mixer.Channel(1).play(self.sound_1)
-            self.screen.blit(self.warn_3,(300,200))
-            pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
+            timer_count(3).start_timer()
             
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
             pygame.mixer.Channel(1).play(self.sound_1)
-            self.screen.blit(self.warn_4,(300,200))
+            self.screen.blit(self.warn_3,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
+            timer_count(1).start_timer()
             
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
             pygame.mixer.Channel(1).play(self.sound_1)
-            self.screen.blit(self.warn_5,(300,200))
+            self.screen.blit(self.warn_4,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
+            timer_count(1).start_timer()
+            
+            pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
+            pygame.mixer.Channel(1).play(self.sound_1)
+            self.screen.blit(self.warn_5,(290,200))
+            pygame.display.update(warn_rect)
+            timer_count(1).start_timer()
             
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
             pygame.mixer.Channel(1).play(self.sound_2)
-            self.screen.blit(self.warn_6,(300,200))
+            self.screen.blit(self.warn_6,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(2).start_timer()
+            timer_count(1).start_timer()
             self.active = False
             
             
