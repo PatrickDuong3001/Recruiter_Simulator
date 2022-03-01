@@ -23,7 +23,8 @@ name = ""
 budget = 0
 years_of_experience = None
 pay_type = None #[0,1,2,3]      #will influence number of job apps
-job_type = None #[0,1,2]
+com_type = None
+level = None
 required_skills = []
 evil_score = 0              #evil score will affect the final score and dialogue choice during the interviews
 num_app = 0                 #number of applicants
@@ -190,7 +191,13 @@ submit_rect = submit.get_rect()
 tablet = pygame.image.load("data/tablet_linked.png").convert_alpha()
 thought_2 = pygame.image.load("data/bubble_2.png").convert_alpha()
 next_button = pygame.image.load("data/next.png").convert_alpha()
+tablet_prev = pygame.image.load("data/tablet_preview.png").convert_alpha()
+start_review = pygame.image.load("data/start_review.png").convert_alpha()
+back_preview = pygame.image.load("data/back_preview.png").convert_alpha()
 thought_text_font = pygame.font.Font("data/arial.TTF",25)
+tablet_text_font = pygame.font.Font("data/arial.TTF",25)
+tablet_text_font_2 = pygame.font.Font("data/arial.TTF",17)
+tablet_text_font_3 = pygame.font.Font("data/arial.TTF",30)
 though_text_1 = thought_text_font.render("3 weeks already passed",True,"Black")
 though_text_2 = thought_text_font.render("Let's harvest the talents!",True,"Black")
 though_text_3 = thought_text_font.render("I need to check the resume stack",True,"Black")
@@ -239,6 +246,7 @@ tablet_transition = True
 bubble_2_active = True
 bubble_2_1_active = True
 wait_active = True
+tablet_preview = False
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -443,8 +451,10 @@ while game_run:    #game_loop
         
         if startup_thread == True: 
             screen.blit(start_up_environment,(0,0))
+            com_type = 0
         elif bigtech_thread == True:
             screen.blit(big_tech_environment,(0,0))
+            com_type = 1
         
         if bubble_1_active:
             thought_bubble_1_rect = screen.blit(thought_1,(230,0))
@@ -562,6 +572,7 @@ while game_run:    #game_loop
                             desktop_active = False
                             
                 while intern_thread:                            #intern thread to set up job requirements and generate number of applicants
+                    level = 0
                     skills_count = len(required_skills)
                     screen.blit(desktop_intern,(150,40))
                     screen.blit(back_button,(200,85))
@@ -704,42 +715,50 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 css_press = True
-                                required_skills.append("CSS")
+                                if "CSS" not in required_skills:
+                                    required_skills.append("CSS")
                             if c_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 c_press = True                 
-                                required_skills.append("C/C++")
+                                if "C/C++" not in required_skills:
+                                    required_skills.append("C/C++")
                             if java_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
-                                java_press = True          
-                                required_skills.append("Java")
+                                java_press = True      
+                                if "Java" not in required_skills:    
+                                    required_skills.append("Java")
                             if html_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 html_press = True
-                                required_skills.append("HTML")
+                                if "HTML" not in required_skills:
+                                    required_skills.append("HTML")
                             if jvs_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
-                                jvs_press = True              
-                                required_skills.append("JavaScript") 
+                                jvs_press = True   
+                                if "JavaScript" not in required_skills:           
+                                    required_skills.append("JavaScript") 
                             if vhdl_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 vhdl_press = True   
-                                required_skills.append("VHDL")
+                                if "VHDL" not in required_skills:
+                                    required_skills.append("VHDL")
                             if python_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
-                                python_press = True              
-                                required_skills.append("Python")
+                                python_press = True          
+                                if "Python" not in required_skills:    
+                                    required_skills.append("Python")
                             if mongo_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 mongo_press = True
-                                required_skills.append("MongoDB")
+                                if "MongoDB" not in required_skills:
+                                    required_skills.append("MongoDB")
                             
                             if exp_count == True and pay_count == True and skills_count != 0:    #When all choices are made, generate random number of applications
                                 if submit_rect.collidepoint(event.pos):
@@ -751,7 +770,7 @@ while game_run:    #game_loop
                                             app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score,com_type=1)
                                         num_app = app.return_num_of_applicants()
                                         evil_result = app.evil_result()
-                                        
+                                        config_writer.set_num_app(num_app)
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills))
                                         intern_thread = False
@@ -761,6 +780,7 @@ while game_run:    #game_loop
                                         phase = 2
                                         
                 while mid_level_thread:                            #mid-level thread to set up job requirements and generate number of applicants
+                    level = 1
                     skills_count = len(required_skills)
                     screen.blit(desktop_intern,(150,40))
                     screen.blit(back_button,(200,85))
@@ -896,42 +916,50 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 css_press = True
-                                required_skills.append("CSS")
+                                if "CSS" not in required_skills:
+                                    required_skills.append("CSS")
                             if c_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 c_press = True                 
-                                required_skills.append("C/C++")
+                                if "C/C++" not in required_skills:
+                                    required_skills.append("C/C++")
                             if java_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 java_press = True          
-                                required_skills.append("Java")
+                                if "Java" not in required_skills:
+                                    required_skills.append("Java")
                             if html_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 html_press = True
-                                required_skills.append("HTML")
+                                if "HTML" not in required_skills:
+                                    required_skills.append("HTML")
                             if jvs_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 jvs_press = True              
-                                required_skills.append("JavaScript") 
+                                if "JavaScript" not in required_skills:
+                                    required_skills.append("JavaScript") 
                             if vhdl_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 vhdl_press = True   
-                                required_skills.append("VHDL")
+                                if "VHDL" not in required_skills:
+                                    required_skills.append("VHDL")
                             if python_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
-                                python_press = True              
-                                required_skills.append("Python")
+                                python_press = True      
+                                if "Python" not in required_skills:        
+                                    required_skills.append("Python")
                             if mongo_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 mongo_press = True
-                                required_skills.append("MongoDB")
+                                if "MongoDB" not in required_skills:
+                                    required_skills.append("MongoDB")
                             
                             if exp_count == True and pay_count == True and skills_count != 0:    #When all choices are made, generate random number of applications
                                 if submit_rect.collidepoint(event.pos):
@@ -943,7 +971,7 @@ while game_run:    #game_loop
                                             app = num_applicant_generator(years_of_experience,pay_type,job_type,evil_score,com_type=1)
                                         num_app = app.return_num_of_applicants()
                                         evil_result = app.evil_result()
-                                        
+                                        config_writer.set_num_app(num_app)
                                         config_writer.set_current_evil_meter(evil_result)
                                         config_writer.set_current_skills(", ".join(required_skills))   
                                         mid_level_thread = False
@@ -953,6 +981,7 @@ while game_run:    #game_loop
                                         phase = 2                    
                                     
                 while senior_thread:                            #mid-level thread to set up job requirements and generate number of applicants
+                    level = 2
                     skills_count = len(required_skills)
                     screen.blit(desktop_intern,(150,40))
                     screen.blit(back_button,(200,85))
@@ -1088,42 +1117,50 @@ while game_run:    #game_loop
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 css_press = True
-                                required_skills.append("CSS")
+                                if "CSS" not in required_skills:
+                                    required_skills.append("CSS")
                             if c_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 c_press = True                 
-                                required_skills.append("C/C++")
+                                if "C/C++" not in required_skills:
+                                    required_skills.append("C/C++")
                             if java_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 java_press = True          
-                                required_skills.append("Java")
+                                if "Java" not in required_skills:
+                                    required_skills.append("Java")
                             if html_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 html_press = True
-                                required_skills.append("HTML")
+                                if "HTML" not in required_skills:
+                                    required_skills.append("HTML")
                             if jvs_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 jvs_press = True              
-                                required_skills.append("JavaScript") 
+                                if "JavaScript" not in required_skills:
+                                    required_skills.append("JavaScript") 
                             if vhdl_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 vhdl_press = True   
-                                required_skills.append("VHDL")
+                                if "VHDL" not in required_skills:
+                                    required_skills.append("VHDL")
                             if python_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 python_press = True              
-                                required_skills.append("Python")
+                                if "Python" not in required_skills:
+                                    required_skills.append("Python")
                             if mongo_rect.collidepoint(event.pos):
                                 pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                 pygame.mixer.Channel(0).play(click_sound)
                                 mongo_press = True
-                                required_skills.append("MongoDB")
+                                if "MongoDB" not in required_skills:
+                                    required_skills.append("MongoDB")
                             
                             if exp_count == True and pay_count == True and skills_count != 0:    #When all choices are made, generate random number of applications
                                 if submit_rect.collidepoint(event.pos):
@@ -1142,8 +1179,10 @@ while game_run:    #game_loop
                                         choose_position_active = False
                                         desktop_active = False
                                         fast_forward_transition = True
-                                        phase = 2
+                                        phase = 2                    
         while fast_forward_transition:
+            config_writer.set_current_level(level)
+            config_writer.set_current_pay(com_type,level,pay_type)   
             ingame_song.stop()
             fast_forwarder.run_fast_forward()
             fast_forward_transition = False
@@ -1152,7 +1191,14 @@ while game_run:    #game_loop
     ##########resume screening phase of the game - phase 2##########
     while phase == 2: 
         setting = settings(screen,phase_2_song)
+        load = game_loading(screen,click_sound)
         config_writer.set_current_phase(2)
+        
+        #local setup for the phase 2 screen (has to be here)
+        level_text = tablet_text_font.render(f"{load.get_level()}",True,"Black")
+        salary_text = tablet_text_font.render(f"{load.get_salary()}",True,"Black")
+        skills_text = tablet_text_font_2.render(f"{load.get_skills()}",True,"Black")
+        num_app_text = tablet_text_font_3.render(f"{load.get_num_app()}",True,"Red")
         
         if startup_thread:
             screen.blit(start_up_environment,(0,0))
@@ -1206,8 +1252,12 @@ while game_run:    #game_loop
             phase_2_song.set_volume(0)
             
         screen.blit(tablet,(0,-15))
-        next_button_rect = screen.blit(next_button,(645,110))
+        screen.blit(level_text,(330,176))
+        screen.blit(salary_text,(330,260))
+        screen.blit(skills_text,(214,390))
+        next_button_rect = screen.blit(next_button,(640,108))
         pygame.display.update()
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()    #quit game
@@ -1220,6 +1270,24 @@ while game_run:    #game_loop
                 if next_button_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
-                                
+                    tablet_preview = True
+        while tablet_preview:
+            screen.blit(tablet_prev,(0,-15))
+            screen.blit(num_app_text,(450,210))
+            start_review_rect = screen.blit(start_review,(480,330))
+            back_preview_rect = screen.blit(back_preview,(340,330))
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()    #quit game
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if back_preview_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
+                        tablet_preview = False
+                    elif start_review_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
     speed.tick(FPS)
             

@@ -81,6 +81,21 @@ class config_write():
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
     
+    def set_current_level(self,level):
+        '''
+        set number of applicants
+        '''
+        level_set = ""
+        if level == 0:
+            level_set = "intern"
+        elif level == 1:
+            level_set = "mid"
+        elif level == 2:
+            level_set = "senior"
+        self.config.set("saved_session","level",level_set)
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
     def set_current_pay(self,com_type,level,pay_type):
         '''
         set the current salary you choose to offer
@@ -88,21 +103,21 @@ class config_write():
         if com_type == 0:     #startup
             if level == 0:    #intern
                 if pay_type == 0: #unpaid
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:  #low
                     self.config.set("saved_session","pay","$10/h")
                 elif pay_type == 2:  #high
                     self.config.set("saved_session","pay","$50/h")
             elif level == 1:    #mid-level
                 if pay_type == 0:  
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:
                     self.config.set("saved_session","pay","$20/h")
                 elif pay_type == 2:
                     self.config.set("saved_session","pay","$60/h")
             elif level == 2:    #senior
                 if pay_type == 0:  
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:
                     self.config.set("saved_session","pay","$30/h")
                 elif pay_type == 2:
@@ -110,21 +125,21 @@ class config_write():
         elif com_type == 1:
             if level == 0:    #intern
                 if pay_type == 0: #unpaid
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:  #low
                     self.config.set("saved_session","pay","$25/h")
                 elif pay_type == 2:  #high
                     self.config.set("saved_session","pay","$80/h")
             elif level == 1:   #mid-level
                 if pay_type == 0:  
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:
                     self.config.set("saved_session","pay","$35/h")
                 elif pay_type == 2:
                     self.config.set("saved_session","pay","$90/h")
             elif level == 2:    #senior
                 if pay_type == 0:  
-                    self.config.set("saved_session","pay","Exposure")
+                    self.config.set("saved_session","pay","exposure")
                 elif pay_type == 1:
                     self.config.set("saved_session","pay","$45/h")
                 elif pay_type == 2:

@@ -92,6 +92,18 @@ class game_loading():
     def get_back_status(self):
         return self.back_status
     
+    def get_level(self):
+        return self.config.get("saved_session","level")
+
+    def get_salary(self):
+        return self.config.get("saved_session","pay")
+    
+    def get_skills(self):
+        return self.config.get("saved_session","skills")
+
+    def get_num_app(self):
+        return self.config.get("saved_session","num_app")
+        
     def display_error_message(self):
         #display an error whenever an unavailable game session is chosen
         warn_rect = self.screen.blit(self.warn_text,(270,150))
