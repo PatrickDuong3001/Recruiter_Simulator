@@ -196,10 +196,12 @@ next_button = pygame.image.load("data/next.png").convert_alpha()
 tablet_prev = pygame.image.load("data/tablet_preview.png").convert_alpha()
 start_review = pygame.image.load("data/start_review.png").convert_alpha()
 back_preview = pygame.image.load("data/back_preview.png").convert_alpha()
+tablet_swipe = pygame.image.load("data/tablet_swipe.png").convert_alpha()
 thought_text_font = pygame.font.Font("data/arial.TTF",25)
 tablet_text_font = pygame.font.Font("data/arial.TTF",25)
 tablet_text_font_2 = pygame.font.Font("data/arial.TTF",17)
 tablet_text_font_3 = pygame.font.Font("data/arial.TTF",30)
+counter_font = pygame.font.Font("data/arial.TTF",20)
 though_text_1 = thought_text_font.render("3 weeks already passed",True,"Black")
 though_text_2 = thought_text_font.render("Let's harvest the talents!",True,"Black")
 though_text_3 = thought_text_font.render("I need to check the resume stack",True,"Black")
@@ -249,6 +251,8 @@ bubble_2_active = True
 bubble_2_1_active = True
 wait_active = True
 tablet_preview = False
+tablet_reviewing = False
+start_countdown = True
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -279,6 +283,9 @@ def read_phase_verify():           #help read saved data for new_game_warn()
     config = ConfigParser()
     config.read("data/game_variables.cfg")
     return int(config.get("saved_session","phase"))
+
+def convert_timer(dur):
+    return int(11-dur)   
     
 while game_run:    #game_loop    
     while start_screen:
@@ -1321,10 +1328,31 @@ while game_run:    #game_loop
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
                         tablet_preview = False
+                        tablet_reviewing = False
                     elif start_review_rect.collidepoint(event.pos):
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
                         warn_countdowner(screen,phase_2_song).start_warn_counter()
-                        
+                        tablet_preview = False
+                        tablet_reviewing = True
+        while tablet_reviewing:
+            if start_countdown:
+                start_timer = pygame.time.get_ticks()
+                start_countdown = False    
+            dur = (pygame.time.get_ticks()-start_timer)/1000
+            counter = counter_font.render(f"Time: {convert_timer(dur)}",True,"Red")
+            
+            if dur == 10:
+                start_countdown = True
+            
+            tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
+            counter_rect = screen.blit(counter,(420,110))
+            pygame.display.update()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()            
+                
     speed.tick(FPS)
             
