@@ -32,29 +32,29 @@ class warn_countdowner():
             pygame.display.update(warn_rect)
             timer_count(3).start_timer()
             
-            pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
-            pygame.mixer.Channel(1).play(self.sound_1)
             self.screen.blit(self.warn_3,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(1).start_timer()
-            
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
             pygame.mixer.Channel(1).play(self.sound_1)
+            timer_count(2).start_timer()
+            
             self.screen.blit(self.warn_4,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(1).start_timer()
-            
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
             pygame.mixer.Channel(1).play(self.sound_1)
+            timer_count(2).start_timer()
+            
             self.screen.blit(self.warn_5,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(1).start_timer()
-            
             pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
-            pygame.mixer.Channel(1).play(self.sound_2)
+            pygame.mixer.Channel(1).play(self.sound_1)
+            timer_count(2).start_timer()
+            
             self.screen.blit(self.warn_6,(290,200))
             pygame.display.update(warn_rect)
-            timer_count(1).start_timer()
+            pygame.mixer.Channel(1).set_volume(self.setting.get_volume())
+            pygame.mixer.Channel(1).play(self.sound_2)
+            timer_count(2).start_timer()
             self.active = False
             
             

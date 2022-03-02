@@ -22,7 +22,7 @@ class game_loading():
         
         #the snapshot of phase 2 and 3 will be added after those phases are implemented
         #these are just placeholders
-        self.phase_2_load = pygame.image.load("data/office_load.jpg").convert_alpha()
+        self.phase_2_load = pygame.image.load("data/tablet_load.png").convert_alpha()
         self.phase_3_load = pygame.image.load("data/office_load.jpg").convert_alpha()
         
         
@@ -70,6 +70,14 @@ class game_loading():
                         else: 
                             self.phase = 1
                             self.load_activate = False
+                    if self.phase_2_load_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(settings(self.screen,self.sound).get_volume())
+                        pygame.mixer.Channel(0).play(self.sound)
+                        if self.phase_check < 2:
+                            self.display_error_message()
+                        else: 
+                            self.phase = 2
+                            self.load_activate = False
     
     def get_startup_status(self):
         status = self.config.get("saved_session","startup")
@@ -85,6 +93,9 @@ class game_loading():
     
     def get_initial_budget(self):
         return int(self.config.get("saved_session","initial_budget"))
+    
+    def get_current_budget(self):
+        return int(self.config.get("saved_session","money"))
 
     def get_phase(self):
         return self.phase

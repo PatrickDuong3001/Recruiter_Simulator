@@ -22,6 +22,7 @@ config_writer = config_file_writer.config_write()
 #may need resetting when the game ends
 name = ""
 budget = 0
+remain_money = 0
 years_of_experience = None
 pay_type = None #[0,1,2,3]      #will influence number of job apps
 com_type = None
@@ -1217,7 +1218,12 @@ while game_run:    #game_loop
     while phase == 2: 
         setting = settings(screen,phase_2_song)
         load = game_loading(screen,click_sound)
+        
         config_writer.set_current_phase(2)
+        budget = load.get_current_budget()
+        
+        required_skills = load.get_skills().split(", ")
+        num_app = int(load.get_num_app())
         
         #local setup for the phase 2 screen (has to be here)
         level_text = tablet_text_font.render(f"{load.get_level()}",True,"Black")
