@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import pygame
 import sys
+import random
 import config_file_writer
 from setting_menu import settings
 from timer import timer_count
@@ -256,6 +257,8 @@ tablet_preview = False
 tablet_reviewing = False
 start_countdown = True
 time_out = False
+random_choice_resume = [False,False,True,False,False,True,False,False,False,True,False]
+num_admitted = 1
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1345,9 +1348,7 @@ while game_run:    #game_loop
                         warn_countdowner(screen,phase_2_song).start_warn_counter()
                         tablet_preview = False
                         tablet_reviewing = True
-        while tablet_reviewing:
-            num_admitted = 1
-            
+        while tablet_reviewing: 
             tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
             advance_rect = screen.blit(advance,(670,106))
             reject_rect = screen.blit(reject,(210,106))
@@ -1358,7 +1359,12 @@ while game_run:    #game_loop
             dur = (pygame.time.get_ticks()-start_timer)/1000
             counter = counter_font.render(f"Time: {convert_timer(dur)}",True,"Red")
             
-            if dur == 10:
+            if dur == 10:               #timer runs out, but still hasn't picked an option
+                choice = random.choice(random_choice_resume)
+                print(choice)
+                if choice == True:
+                    #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
+                    num_admitted += 1
                 start_countdown = True
             
             counter_rect = screen.blit(counter,(420,110))
@@ -1368,11 +1374,18 @@ while game_run:    #game_loop
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                #elif event.type == pygame.MOUSEBUTTONDOWN:
-                #    if advance_rect.collidepoint(event.pos):   #when the timer runs out and the user doesn't act
-                #        #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
-                #        num_admitted += 1
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if advance_rect.collidepoint(event.pos): 
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
+                        #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
+                        num_admitted += 1
+                        start_countdown = True
+                    elif reject_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                        pygame.mixer.Channel(0).play(click_sound)
+                        start_countdown = True
+            print(num_admitted)
                         
-                
     speed.tick(FPS)
             
