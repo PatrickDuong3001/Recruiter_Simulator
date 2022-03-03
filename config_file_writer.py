@@ -147,6 +147,46 @@ class config_write():
         
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
+            
+    def set_finalist_name(self,which,name):
+        '''
+        set name of the chosen candidates
+        '''
+        self.config.set(f"finalist_{which}","name",name)
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
+    def set_finalist_skills(self,which,skills):
+        '''
+        set skills of the chosen candidate
+        '''
+        self.config.set(f"finalist_{which}","skills",skills)
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
+    def set_finalist_exp(self,which,exp):
+        '''
+        set experience of the chosen candidate
+        '''
+        self.config.set(f"finalist_{which}","exp",str(exp))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+            
+    def set_finalist_character(self,which,character):
+        '''
+        set character of the chosen candidate
+        '''
+        self.config.set(f"finalist_{which}","character",character)
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+            
+    def set_finalist_success_rate(self,which, rate):
+        '''
+        set success rate of chosen candidate
+        '''
+        self.config.set(f"finalist_{which}","success_rate",str(rate))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
     
     def delete_all_saved_data(self):
         '''

@@ -197,6 +197,8 @@ tablet_prev = pygame.image.load("data/tablet_preview.png").convert_alpha()
 start_review = pygame.image.load("data/start_review.png").convert_alpha()
 back_preview = pygame.image.load("data/back_preview.png").convert_alpha()
 tablet_swipe = pygame.image.load("data/tablet_swipe.png").convert_alpha()
+advance = pygame.image.load("data/advance.png").convert_alpha()
+reject = pygame.image.load("data/reject.png").convert_alpha()
 thought_text_font = pygame.font.Font("data/arial.TTF",25)
 tablet_text_font = pygame.font.Font("data/arial.TTF",25)
 tablet_text_font_2 = pygame.font.Font("data/arial.TTF",17)
@@ -253,6 +255,7 @@ wait_active = True
 tablet_preview = False
 tablet_reviewing = False
 start_countdown = True
+time_out = False
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -285,7 +288,14 @@ def read_phase_verify():           #help read saved data for new_game_warn()
     return int(config.get("saved_session","phase"))
 
 def convert_timer(dur):
-    return int(11-dur)   
+    return int(11-dur) 
+
+def save_info_of_finalist(which,name,skills,character,exp,rate):
+    config_writer.set_finalist_name(which,name)
+    config_writer.set_finalist_skills(which,skills)
+    config_writer.set_finalist_character(which,character)
+    config_writer.set_finalist_exp(which,exp)
+    config_writer.set_finalist_success_rate(which,rate)
     
 while game_run:    #game_loop    
     while start_screen:
@@ -1248,7 +1258,7 @@ while game_run:    #game_loop
         while bubble_2_active:
             if wait_active:
                 pygame.display.update()
-                timer_count(3).start_timer()
+                timer_count(2).start_timer()
                 wait_active = False
             thought_2_rect = screen.blit(thought_2,(230,0))
             screen.blit(though_text_1,(300,120))
@@ -1336,6 +1346,12 @@ while game_run:    #game_loop
                         tablet_preview = False
                         tablet_reviewing = True
         while tablet_reviewing:
+            num_admitted = 1
+            
+            tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
+            advance_rect = screen.blit(advance,(670,106))
+            reject_rect = screen.blit(reject,(210,106))
+            
             if start_countdown:
                 start_timer = pygame.time.get_ticks()
                 start_countdown = False    
@@ -1345,14 +1361,18 @@ while game_run:    #game_loop
             if dur == 10:
                 start_countdown = True
             
-            tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
             counter_rect = screen.blit(counter,(420,110))
             pygame.display.update()
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()            
+                    sys.exit()
+                #elif event.type == pygame.MOUSEBUTTONDOWN:
+                #    if advance_rect.collidepoint(event.pos):   #when the timer runs out and the user doesn't act
+                #        #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
+                #        num_admitted += 1
+                        
                 
     speed.tick(FPS)
             

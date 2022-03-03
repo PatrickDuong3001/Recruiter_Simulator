@@ -36,7 +36,7 @@ class fast_forward_animation(pygame.sprite.Sprite):
             self.redraw(self.pos_x)
             self.pos_x += 0.12
             pygame.display.update()
-            if dur > 6:
+            if dur > 5:
                 self.sound.stop()
                 self.kill()
                 break
