@@ -3,7 +3,7 @@ import random
 import names
 
 skills = ["Docker","SQL","AWS","Android","Java","JavaScript","PHP","Python","HTML","VHDL","C/C++","CSS","MongoDB","React","Git","Jenkins","Selenium","MATLAB"]
-characters = ["hard-working","handsome","creative","teamwork","research","documentation","muscular","innovative","honest","obedient","strong focus","detail-oriented"]
+characters = ["hard-working","handsome","creative","teamwork","research","documentation","muscular","innovative","honest","obedient","strong focus","detail-oriented","team player"]
 experience = ["software engineer","SDET","web developer","software developer","automation engineer","QA analyst","cashier","receptionist","tester","test engineer","business analyst","system engineer","engineer","hardware engineer","DevOps engineer","writer","programmer","data engineer"]
 
 class resume_generator():

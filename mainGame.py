@@ -11,6 +11,7 @@ from fast_forward import fast_forward_animation
 from tablet_animation import tablet_animation
 from warn_countdown import warn_countdowner
 from resume_data_generator import resume_generator
+from fast_forward_2 import fast_forward_animation_2
 
 #initiate pygame session
 WIDTH = 900
@@ -52,9 +53,12 @@ clock_fast_sound = pygame.mixer.Sound("data/fast_forward.mp3")
 clock_fast_sound.set_volume(0.1)
 three_week_sound = pygame.mixer.Sound("data/three_week.mp3")
 three_week_sound.set_volume(0.1)
+eternity_sound = pygame.mixer.Sound("data/eternity.mp3")
+eternity_sound.set_volume(0.1)
 
 #all animation initiations
 fast_forwarder = fast_forward_animation(screen,clock_fast_sound,three_week_sound)
+fast_forwarder_2 = fast_forward_animation_2(screen,click_sound,clock_fast_sound,eternity_sound)
 #tablet_mover = tablet_animation(screen,click_sound)
 
 
@@ -1356,6 +1360,8 @@ while game_run:    #game_loop
                         data_generate = True
                         update_resume = True
                         resume_counter = 0
+                        
+        ###need to write some code to jump right to phase 3 when noone applies for the job###
         while tablet_reviewing: 
             if data_generate:
                 data_generator = resume_generator(num_app)
@@ -1421,6 +1427,10 @@ while game_run:    #game_loop
                         resume_counter += 1
             
             if (resume_counter == num_app) or (num_admitted == 3):  #if all the resumes are viewed or the number of approved applicants reaches 3
+                phase_2_song.fadeout(2000)
+                timer_count(2).start_timer()
+                phase_2_song.stop()
+                fast_forwarder_2.run_fast_forward_2()
                 pygame.quit()
                 sys.exit()
                 
