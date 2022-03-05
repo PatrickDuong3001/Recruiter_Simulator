@@ -1873,7 +1873,7 @@ class resume_generator():
         '''
         set up experience for a candidate
         '''
-        num_exp = random.randint(1,3)
+        num_exp = random.randint(1,2)
         random_exp = None
         temp_exp_set = []
         
@@ -2908,8 +2908,6 @@ class resume_generator():
             self.set_exp(x)
             self.set_success_rate(x)
             self.set_person(x)
-        for x in range(self.how_many):   #put here for reference, no use 
-            print(self.all_persons[x])
             
     def get_name(self,person_index):
         #print(self.all_persons[person_index][0])

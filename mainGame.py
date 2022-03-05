@@ -10,6 +10,7 @@ from load_game import game_loading
 from fast_forward import fast_forward_animation
 from tablet_animation import tablet_animation
 from warn_countdown import warn_countdowner
+from resume_data_generator import resume_generator
 
 #initiate pygame session
 WIDTH = 900
@@ -248,7 +249,8 @@ vhdl_press = False
 html_press = False
 money_deduct = True
 
-#control panel phase 2:
+#control panel phase 2:    
+#some controls may need restarting at the end of the games or simply end of phase 2
 tablet_transition = True
 bubble_2_active = True
 bubble_2_1_active = True
@@ -258,7 +260,10 @@ tablet_reviewing = False
 start_countdown = True
 time_out = False
 random_choice_resume = [False,False,True,False,False,True,False,False,False,True,False]
-num_admitted = 1
+num_admitted = 0
+data_generate = False
+resume_counter = None
+update_resume = False
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1348,10 +1353,32 @@ while game_run:    #game_loop
                         warn_countdowner(screen,phase_2_song).start_warn_counter()
                         tablet_preview = False
                         tablet_reviewing = True
+                        data_generate = True
+                        update_resume = True
+                        resume_counter = 0
         while tablet_reviewing: 
-            tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
-            advance_rect = screen.blit(advance,(670,106))
-            reject_rect = screen.blit(reject,(210,106))
+            if data_generate:
+                data_generator = resume_generator(num_app)
+                data_generator.generate_names()
+                data_generator.build_profiles()
+                data_generate = False
+            
+            if update_resume:
+                name_text = tablet_text_font_2.render(f"{data_generator.get_name(resume_counter)}",True,"Black")
+                skill_text = tablet_text_font_2.render(f"{data_generator.get_skills(resume_counter)}",True,"Black")
+                char_text = tablet_text_font_2.render(f"{data_generator.get_characters(resume_counter)}",True,"Black")
+                exp_text = tablet_text_font_2.render(f"{data_generator.get_exp(resume_counter)}",True,"Black")
+                
+                tablet_swipe_rect = screen.blit(tablet_swipe,(0,-15))
+                advance_rect = screen.blit(advance,(670,106))
+                reject_rect = screen.blit(reject,(210,106))
+                screen.blit(name_text,(280,158))
+                screen.blit(skill_text,(270,220))
+                screen.blit(char_text,(330,288))
+                screen.blit(exp_text,(335,358))
+                
+                pygame.display.update()
+                update_resume = False
             
             if start_countdown:
                 start_timer = pygame.time.get_ticks()
@@ -1359,16 +1386,18 @@ while game_run:    #game_loop
             dur = (pygame.time.get_ticks()-start_timer)/1000
             counter = counter_font.render(f"Time: {convert_timer(dur)}",True,"Red")
             
-            if dur == 10:               #timer runs out, but still hasn't picked an option
+            if dur >= 10:               #timer runs out, but still hasn't picked an option
                 choice = random.choice(random_choice_resume)
-                print(choice)
                 if choice == True:
                     #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
                     num_admitted += 1
+                resume_counter += 1
                 start_countdown = True
+                update_resume = True
             
-            counter_rect = screen.blit(counter,(420,110))
-            pygame.display.update()
+            cover_rect = pygame.draw.rect(screen,(255,255,255),(420,110,80,25))
+            screen.blit(counter,(420,110))
+            pygame.display.update(cover_rect)
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1378,14 +1407,22 @@ while game_run:    #game_loop
                     if advance_rect.collidepoint(event.pos): 
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
-                        #save_info_of_finalist(num_admitted,name,skills,character,exp,rate )   #beside num_admitted, other parameters need data. will add data to function
                         num_admitted += 1
+                        #beside num_admitted, other parameters need data. will add data to function
+                        save_info_of_finalist(num_admitted,data_generator.get_name(resume_counter),data_generator.get_skills(resume_counter),data_generator.get_characters(resume_counter),data_generator.get_exp(resume_counter),data_generator.get_success_rate(resume_counter))
                         start_countdown = True
+                        update_resume = True
+                        resume_counter += 1
                     elif reject_rect.collidepoint(event.pos):
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
                         start_countdown = True
-            print(num_admitted)
-                        
+                        update_resume = True
+                        resume_counter += 1
+            
+            if (resume_counter == num_app) or (num_admitted == 3):  #if all the resumes are viewed or the number of approved applicants reaches 3
+                pygame.quit()
+                sys.exit()
+                
     speed.tick(FPS)
             
