@@ -46,6 +46,8 @@ ingame_song = pygame.mixer.Sound("data/ingame_song.mp3")
 ingame_song.set_volume(0.1)
 phase_2_song = pygame.mixer.Sound("data/phase_2_song.mp3")
 phase_2_song.set_volume(0.1)
+phase_3_song = pygame.mixer.Sound("data/phase_3_song.mp3")
+phase_3_song.set_volume(0.1)
 
 #all sound effects:
 click_sound = pygame.mixer.Sound("data/click_effect.mp3")
@@ -85,7 +87,7 @@ guide_1 = guide_font.render("-As a recruiter, you are initially given a fixed bu
 guide_2 = guide_font.render("-You can hire as many intern, mid-level, or senior-level employees as you want, as long as you have enough budget for your recruitment.",True,"Red")
 guide_3 = guide_font.render("-You will hire any interns for 3 months and any full-time employees for 1 year",True,"Red")
 guide_4 = guide_font.render("-You have to complete the whole recruitment process for each position before hiring for the next one.",True,"Red")
-guide_5 = guide_font.render("-The number of resumes you receive depends on your choice for job posting. You have 6 seconds to screen each resume. Watch out for the timer!",True,"Red")
+guide_5 = guide_font.render("-The number of resumes you receive depends on your choice for job posting. You have 10 seconds to screen each resume. Watch out for the timer!",True,"Red")
 guide_6 = guide_font.render("-Every choice you make during each phase will result in a different outcome during the process. Be careful with your decisions!",True,"Red")
 hiring = pygame.image.load("data/hiring.png").convert_alpha()
 recruiter_guide = recruiter_font.render("Recruiter Training",True,"Red") 
@@ -214,6 +216,12 @@ though_text_1 = thought_text_font.render("3 weeks already passed",True,"Black")
 though_text_2 = thought_text_font.render("Let's harvest the talents!",True,"Black")
 though_text_3 = thought_text_font.render("I need to check the resume stack",True,"Black")
 
+#interview screen set up
+before_text_1 = tablet_text_font.render("So exciting!",True,"Black")
+before_text_2 = tablet_text_font.render("Interview day finally comes",True,"Black")
+before_text_3 = tablet_text_font.render("Let's catch the big fish!",True,"Black")
+before_text_4 = tablet_text_font.render("Shall we?",True,"Black")
+bubble_3 = pygame.image.load("data/bubble_3.png").convert_alpha()
 
 #MAJORITY of control panels may need to be reset after game ends
 #control panel phase 0
@@ -268,6 +276,12 @@ num_admitted = 0
 data_generate = False
 resume_counter = None
 update_resume = False
+
+#control panel phase 3
+#some controls may need restarting at the end of the game or simply the end of phase 3
+bubble_3_active = False
+wait_3_active = False
+bubble_3_2_active = False
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1414,7 +1428,6 @@ while game_run:    #game_loop
                         pygame.mixer.Channel(0).set_volume(setting.get_volume())
                         pygame.mixer.Channel(0).play(click_sound)
                         num_admitted += 1
-                        #beside num_admitted, other parameters need data. will add data to function
                         save_info_of_finalist(num_admitted,data_generator.get_name(resume_counter),data_generator.get_skills(resume_counter),data_generator.get_characters(resume_counter),data_generator.get_exp(resume_counter),data_generator.get_success_rate(resume_counter))
                         start_countdown = True
                         update_resume = True
@@ -1431,8 +1444,66 @@ while game_run:    #game_loop
                 timer_count(2).start_timer()
                 phase_2_song.stop()
                 fast_forwarder_2.run_fast_forward_2()
+                if startup_thread:
+                    screen.blit(start_up_environment,(0,0))
+                elif bigtech_thread:
+                    screen.blit(big_tech_environment,(0,0))
+                pygame.display.update()
+                timer_count(2).start_timer()                    
+                tablet_reviewing = False
+                bubble_3_active = True
+                phase = 3            
+    
+    while phase == 3:
+        setting = settings(screen,phase_2_song)
+        load = game_loading(screen,click_sound)
+        phase_3_song.play(-1,fade_ms=1000)
+        
+        if setting.get_music_status() == False: 
+            phase_3_song.set_volume(0.1)
+        else: 
+            phase_3_song.set_volume(0)
+            
+        if startup_thread == True:
+            screen.blit(start_up_environment,(0,0))
+            wait_3_active = True
+        elif bigtech_thread == True:
+            screen.blit(big_tech_environment,(0,0))
+            wait_3_active = True
+        
+        if bubble_3_active:
+            bubble_3_rect = screen.blit(bubble_3,(230,0))
+            screen.blit(before_text_1,(400,100))
+            screen.blit(before_text_2,(320,170))
+        setting_button_rect = screen.blit(setting_button,(850,10))
+        pygame.display.update()
+            
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if setting_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    setting.run_setting()   
+                elif bubble_3_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    while bubble_3_active:
+                        screen.blit(bubble_3,(230,0))
+                        screen.blit(before_text_3,(340,100))
+                        screen.blit(before_text_4,(420,170))
+                        pygame.display.update(bubble_3_rect)
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                pygame.quit()
+                                sys.exit()
+                            elif event.type == pygame.MOUSEBUTTONDOWN:
+                                if bubble_3_rect.collidepoint(event.pos):
+                                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                                    pygame.mixer.Channel(0).play(click_sound)
+                                    bubble_3_active = False
+                                                    
     speed.tick(FPS)
             
