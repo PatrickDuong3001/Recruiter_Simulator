@@ -12,6 +12,7 @@ from tablet_animation import tablet_animation
 from warn_countdown import warn_countdowner
 from resume_data_generator import resume_generator
 from fast_forward_2 import fast_forward_animation_2
+from tablet_animation_2 import tablet_animator
 
 #initiate pygame session
 WIDTH = 900
@@ -60,7 +61,6 @@ eternity_sound.set_volume(0.1)
 
 #all animation initiations
 fast_forwarder = fast_forward_animation(screen,clock_fast_sound,three_week_sound)
-fast_forwarder_2 = fast_forward_animation_2(screen,click_sound,clock_fast_sound,eternity_sound)
 #tablet_mover = tablet_animation(screen,click_sound)
 
 
@@ -77,7 +77,7 @@ guide_button = pygame.image.load("data/guide_button.png").convert_alpha()
 setting_button = pygame.image.load("data/setting_button.png").convert_alpha()
 load_button = pygame.image.load("data/load_button.png").convert_alpha()
 info = pygame.font.Font("data/arial.TTF",15)
-name = info.render("Patrick & Quan",False,"White")
+name = info.render("Patrick",False,"White")
 title_start = pygame.font.Font("data/animation.TTF",40)
 title = title_start.render("Recruiter Simulator",False,"#48dcff")
 back_guide = pygame.image.load("data/back_button_guide.png").convert_alpha()
@@ -343,7 +343,7 @@ while game_run:    #game_loop
         load_button_rect = screen.blit(load_button,(540,80))
         setting_button_rect = screen.blit(setting_button,(850,450))
         
-        screen.blit(name,(310,470))
+        screen.blit(name,(325,470))
         screen.blit(title,(160,20))
         
         pygame.display.update()
@@ -1449,7 +1449,10 @@ while game_run:    #game_loop
                         update_resume = True
                         resume_counter += 1
             
+            #####Need to write a case where there's no number of finalists (num_admitted = 0)#####
             if (resume_counter == num_app) or (num_admitted == 3):  #if all the resumes are viewed or the number of approved applicants reaches 3
+                fast_forwarder_2 = fast_forward_animation_2(screen,click_sound,clock_fast_sound,eternity_sound)
+                config_writer.set_num_finalist(num_admitted)    #number of finalists maybe fewer than 3.
                 phase_2_song.fadeout(2000)
                 timer_count(2).start_timer()
                 phase_2_song.stop()
@@ -1527,15 +1530,23 @@ while game_run:    #game_loop
             person_index = 1
             interview_phase = True
             knock_wait = False
+            knock_active = True
             
         while interview_phase:
-            while knock_active:                
+            while knock_active:    
+                setting = settings(screen,phase_2_song)
+                            
                 if startup_thread == True:
+                    screen.blit(start_up_environment,(0,0))
                     instr_bubble_rect = screen.blit(instr_bubble,(455,110))
                     screen.blit(knock_text_1,(460,110))
-                    screen.blit(knock_text_2,(485,140))
+                    screen.blit(knock_text_2,(490,135))
                 elif bigtech_thread == True:
-                    screen.blit(instr_bubble,(230,10))
+                    screen.blit(big_tech_environment,(0,0))
+                    instr_bubble_rect = screen.blit(instr_bubble,(230,110))
+                    screen.blit(knock_text_1,(235,110))
+                    screen.blit(knock_text_2,(265,135))
+                screen.blit(setting_button,(850,10))
                 pygame.display.update()
                 
                 for event in pygame.event.get():
@@ -1549,15 +1560,24 @@ while game_run:    #game_loop
                             phase_3_song.fadeout(2000)
                             timer_count(2).start_timer()
                             phase_3_song.stop()
-                            interview_counter = 0
+                            interview_counter = 1
                             interview_process = True
                             tablet_break = True
                             knock_active = False
+                        elif setting_button_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                            setting.run_setting()
                             
             while interview_process:
                 if tablet_break:
-                    pass
-            
+                    tablet_animate = tablet_animator(screen,click_sound,interview_counter)
+                    tablet_animate.fadeout_screen(900,500)
+                    tablet_break = False
+                    
+                tablet_animate.tablet_move()
+                pygame.quit()
+                sys.exit()
             
                                                     
     speed.tick(FPS)

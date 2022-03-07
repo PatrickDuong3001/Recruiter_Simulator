@@ -188,6 +188,14 @@ class config_write():
         with open("data/game_variables.cfg","w") as configfile:
             self.config.write(configfile)
     
+    def set_num_finalist(self,num):
+        '''
+        set numer of finalists
+        '''
+        self.config.set("saved_session","num_finalist",str(num))
+        with open("data/game_variables.cfg","w") as configfile:
+            self.config.write(configfile)
+    
     def delete_all_saved_data(self):
         '''
         set all the variables inside 'saved session' to default values

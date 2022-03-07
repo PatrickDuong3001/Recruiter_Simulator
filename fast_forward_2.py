@@ -11,7 +11,6 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
         self.click = clk  
         self.fast_clock = fast
         self.effect = eff
-        self.control = settings(self.screen,self.click)
         
         self.config = ConfigParser()
         self.config.read("data/game_variables.cfg")
@@ -49,8 +48,10 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
         bubble_2_active = True
         fast_forward_active = False
         switch_screen = False
+        control = settings(self.screen,self.click)
+
         
-        if self.control.get_music_status() == False: 
+        if control.get_music_status() == False: 
             self.fast_clock.set_volume(0.1)
             self.effect.set_volume(0.1)
         else: 
@@ -58,9 +59,7 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
             self.effect.set_volume(0)
             
         while forward_active:
-            
             while tablet_move:
-                
                 if self.startup_status == "True" and self.bigtech_status == "False":
                     self.screen.blit(self.office_1,(0,0))
                 elif self.startup_status == "False" and self.bigtech_status == "True":
@@ -86,11 +85,7 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
                         sys.exit()
                         
             while bubble_active:
-                if self.startup_status == "True" and self.bigtech_status == "False":
-                    self.screen.blit(self.office_1,(0,0))
-                elif self.startup_status == "False" and self.bigtech_status == "True":
-                    self.screen.blit(self.office_2,(0,0))
-                
+                control = settings(self.screen,self.click)
                 self.bubble_rect = self.screen.blit(self.bubble,(230,0))
                 self.screen.blit(self.thought_1,(390,100))
                 self.screen.blit(self.thought_2,(370,170))
@@ -103,17 +98,23 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
                         sys.exit()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if self.control_rect.collidepoint(event.pos):
-                            pygame.mixer.Channel(0).set_volume(self.control.get_volume())
+                            pygame.mixer.Channel(0).set_volume(control.get_volume())
                             pygame.mixer.Channel(0).play(self.click)
-                            self.control.run_setting()
+                            control.run_setting()
+                            if self.startup_status == "True" and self.bigtech_status == "False":
+                                self.screen.blit(self.office_1,(0,0))
+                            elif self.startup_status == "False" and self.bigtech_status == "True":
+                                self.screen.blit(self.office_2,(0,0))
                         elif self.bubble_rect.collidepoint(event.pos):
-                            pygame.mixer.Channel(0).set_volume(self.control.get_volume())
+                            pygame.mixer.Channel(0).set_volume(control.get_volume())
                             pygame.mixer.Channel(0).play(self.click)
                             
                             while bubble_2_active:
+                                control = settings(self.screen,self.click)
                                 self.bubble_rect_2 = self.screen.blit(self.bubble,(230,0))
                                 self.screen.blit(self.thought_3,(300,100))
                                 self.screen.blit(self.thought_4,(300,170))
+                                self.screen.blit(self.setting,(850,10))
                                 pygame.display.update()
                                
                                 for event in pygame.event.get():
@@ -122,7 +123,7 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
                                         sys.exit()
                                     elif event.type == pygame.MOUSEBUTTONDOWN:
                                         if self.bubble_rect_2.collidepoint(event.pos):
-                                            pygame.mixer.Channel(0).set_volume(self.control.get_volume())
+                                            pygame.mixer.Channel(0).set_volume(control.get_volume())
                                             pygame.mixer.Channel(0).play(self.click)
                                             bubble_2_active = False
                                             bubble_active = False
@@ -130,17 +131,16 @@ class fast_forward_animation_2(pygame.sprite.Sprite):
                                             start_timer = pygame.time.get_ticks() 
                                             self.fast_clock.play(-1)    
                                         elif self.control_rect.collidepoint(event.pos):
-                                            pygame.mixer.Channel(0).set_volume(self.control.get_volume())
+                                            pygame.mixer.Channel(0).set_volume(control.get_volume())
                                             pygame.mixer.Channel(0).play(self.click)
-                                            self.control.run_setting()   
+                                            control.run_setting()   
                                             if self.startup_status == "True" and self.bigtech_status == "False":
                                                 self.screen.blit(self.office_1,(0,0))
                                             elif self.startup_status == "False" and self.bigtech_status == "True":
                                                 self.screen.blit(self.office_2,(0,0))  
-                                            self.screen.blit(self.setting,(850,10))
                                                                               
             while fast_forward_active:
-                if self.control.get_music_status() == False: 
+                if control.get_music_status() == False: 
                     self.fast_clock.set_volume(0.1)
                     self.effect.set_volume(0.1)
                 else: 
