@@ -221,6 +221,8 @@ before_text_1 = tablet_text_font.render("So exciting!",True,"Black")
 before_text_2 = tablet_text_font.render("Interview day finally comes",True,"Black")
 before_text_3 = tablet_text_font.render("Let's catch the big fish!",True,"Black")
 before_text_4 = tablet_text_font.render("Shall we?",True,"Black")
+knock_text_1 = tablet_text_font_2.render("knock",True,"Black")
+knock_text_2 = tablet_text_font_2.render("knock",True,"Black")
 bubble_3 = pygame.image.load("data/bubble_3.png").convert_alpha()
 
 #MAJORITY of control panels may need to be reset after game ends
@@ -282,6 +284,14 @@ update_resume = False
 bubble_3_active = False
 wait_3_active = False
 bubble_3_2_active = False
+knock_wait = False
+pre_interview = False
+interview_phase = False
+knock_active = False
+person_index = None
+interview_process = False
+interview_counter = None
+tablet_break = False
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -1494,7 +1504,8 @@ while game_run:    #game_loop
                         screen.blit(bubble_3,(230,0))
                         screen.blit(before_text_3,(340,100))
                         screen.blit(before_text_4,(420,170))
-                        pygame.display.update(bubble_3_rect)
+                        screen.blit(setting_button,(850,10))
+                        pygame.display.update()
                         for event in pygame.event.get():
                             if event.type == pygame.QUIT:
                                 pygame.quit()
@@ -1504,6 +1515,50 @@ while game_run:    #game_loop
                                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                                     pygame.mixer.Channel(0).play(click_sound)
                                     bubble_3_active = False
+                                    knock_wait = True
+        if knock_wait:
+            if startup_thread == True:
+                screen.blit(start_up_environment,(0,0))
+            elif bigtech_thread == True:
+                screen.blit(big_tech_environment,(0,0))
+            screen.blit(setting_button,(850,10))
+            pygame.display.update()
+            timer_count(2).start_timer()
+            person_index = 1
+            interview_phase = True
+            knock_wait = False
+            
+        while interview_phase:
+            while knock_active:                
+                if startup_thread == True:
+                    instr_bubble_rect = screen.blit(instr_bubble,(455,110))
+                    screen.blit(knock_text_1,(460,110))
+                    screen.blit(knock_text_2,(485,140))
+                elif bigtech_thread == True:
+                    screen.blit(instr_bubble,(230,10))
+                pygame.display.update()
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if instr_bubble_rect.collidepoint(event.pos):
+                            pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                            pygame.mixer.Channel(0).play(click_sound)
+                            phase_3_song.fadeout(2000)
+                            timer_count(2).start_timer()
+                            phase_3_song.stop()
+                            interview_counter = 0
+                            interview_process = True
+                            tablet_break = True
+                            knock_active = False
+                            
+            while interview_process:
+                if tablet_break:
+                    pass
+            
+            
                                                     
     speed.tick(FPS)
             

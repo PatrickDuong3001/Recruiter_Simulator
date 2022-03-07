@@ -114,6 +114,18 @@ class game_loading():
 
     def get_num_app(self):
         return self.config.get("saved_session","num_app")
+    
+    def get_finalist_name(self,index):
+        return self.config.get(f"finalist_{index}","name")
+    
+    def get_finalist_skills(self,index):
+        return self.config.get(f"finalist_{index}","skills")
+
+    def get_finalist_exp(self,index):
+        return self.config.get(f"finalist_{index}","exp")
+    
+    def get_finalist_character(self,index):
+        return self.config.get(f"finalist_{index}","character")
         
     def display_error_message(self):
         #display an error whenever an unavailable game session is chosen
