@@ -224,6 +224,8 @@ before_text_4 = tablet_text_font.render("Shall we?",True,"Black")
 knock_text_1 = tablet_text_font_2.render("knock",True,"Black")
 knock_text_2 = tablet_text_font_2.render("knock",True,"Black")
 bubble_3 = pygame.image.load("data/bubble_3.png").convert_alpha()
+tablet_blank = pygame.image.load("data/tablet_blank.png").convert_alpha()
+
 
 #MAJORITY of control panels may need to be reset after game ends
 #control panel phase 0
@@ -281,7 +283,7 @@ update_resume = False
 
 #control panel phase 3
 #some controls may need restarting at the end of the game or simply the end of phase 3
-bubble_3_active = False
+bubble_3_active = True
 wait_3_active = False
 bubble_3_2_active = False
 knock_wait = False
@@ -292,6 +294,9 @@ person_index = None
 interview_process = False
 interview_counter = None
 tablet_break = False
+interview_start = False
+chosen_candidate_index = []  #needs emptying at the endgame
+interviewee = None
 
 def new_game_warn():    #activate a warn window when the user want to start a new game
     warn_activate = True
@@ -332,6 +337,13 @@ def save_info_of_finalist(which,name,skills,character,exp,rate):
     config_writer.set_finalist_character(which,character)
     config_writer.set_finalist_exp(which,exp)
     config_writer.set_finalist_success_rate(which,rate)
+    
+def choose_random_interviewee():
+    index = random.randint(1,5)
+    while index in chosen_candidate_index:
+        index = random.randint(1,5)
+    chosen_candidate_index.append(index)
+    return index
     
 while game_run:    #game_loop    
     while start_screen:
@@ -1464,11 +1476,11 @@ while game_run:    #game_loop
                 pygame.display.update()
                 timer_count(2).start_timer()                    
                 tablet_reviewing = False
-                bubble_3_active = True
                 phase = 3            
     
     while phase == 3:
-        setting = settings(screen,phase_2_song)
+        config_writer.set_current_phase(phase)    #remember the current phase
+        setting = settings(screen,phase_3_song)
         load = game_loading(screen,click_sound)
         phase_3_song.play(-1,fade_ms=1000)
         
@@ -1534,8 +1546,13 @@ while game_run:    #game_loop
             
         while interview_phase:
             while knock_active:    
-                setting = settings(screen,phase_2_song)
+                setting = settings(screen,phase_3_song)
                             
+                if setting.get_music_status() == False: 
+                    phase_3_song.set_volume(0.1)
+                else: 
+                    phase_3_song.set_volume(0)
+            
                 if startup_thread == True:
                     screen.blit(start_up_environment,(0,0))
                     instr_bubble_rect = screen.blit(instr_bubble,(455,110))
@@ -1574,11 +1591,26 @@ while game_run:    #game_loop
                     tablet_animate = tablet_animator(screen,click_sound,interview_counter)
                     tablet_animate.fadeout_screen(900,500)
                     tablet_break = False
+                    interview_start = True
                     
                 tablet_animate.tablet_still()
-                timer_count(100).start_timer()
-                #pygame.quit()
-                #sys.exit()
+                interviewee = pygame.image.load(f"data/person_{choose_random_interviewee()}.png").convert_alpha()
+                
+                while interview_start:
+                    if startup_thread == True:
+                        screen.blit(start_up_environment,(0,0))
+                    elif bigtech_thread == True:
+                        screen.blit(big_tech_environment,(0,0))
+                    
+                    screen.blit(tablet_blank,(0,-15))
+                    screen.blit(interviewee,(350,100))
+                    screen.blit(setting_button,(850,10))
+                    pygame.display.update()
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            sys.exit()
             
                                                     
     speed.tick(FPS)

@@ -2,9 +2,9 @@ import pygame
 import random
 import names
 
-skills = ["Docker","SQL","AWS","Android","Java","JavaScript","PHP","Python","HTML","VHDL","C/C++","CSS","MongoDB","React","Git","Jenkins","Selenium","MATLAB","Pytest","Redmine","Jira","Bootstrap","Bamboo","No SQL","Azure","Research"]
+skills = ["Docker","SQL","AWS","Android","Java","JavaScript","PHP","Python","HTML","VHDL","C/C++","CSS","MongoDB","React","Git","Jenkins","Selenium","MATLAB","Pytest","Redmine","Jira","Bootstrap","Bamboo","NoSQL","Azure","Research","WordPress"]
 characters = ["hard-working","creative","teamwork","decisive","innovative","honest","obedient","strong focus","detail-oriented","team player","leadership","mentorship","data analysis","friendly","supportive","tech savvy","data-driven","active"]
-experience = ["software engineer","SDET","web developer","software developer","automation engineer","QA analyst","cashier","receptionist","tester","test engineer","business analyst","system engineer","engineer","hardware engineer","DevOps engineer","writer","programmer","data engineer","cloud engineer","tiktoker","social engineer","physicist","quant developer","mathematician","cs tutor","data scientist"]
+experience = ["software engineer","SDET","web developer","software developer","automation engineer","QA analyst","cashier","receptionist","tester","test engineer","business analyst","system engineer","engineer","hardware engineer","DevOps engineer","writer","programmer","data engineer","cloud engineer","tiktoker","social engineer","physicist","quant developer","mathematician","cs tutor","data scientist","AI engineer"]
 
 class resume_generator():
     def __init__(self,how_many):
