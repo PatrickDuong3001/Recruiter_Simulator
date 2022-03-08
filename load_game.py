@@ -22,7 +22,7 @@ class game_loading():
         
         #the snapshot of phase 2 and 3 will be added after those phases are implemented
         #these are just placeholders
-        self.phase_2_load = pygame.image.load("data/office_load.jpg").convert_alpha()
+        self.phase_2_load = pygame.image.load("data/tablet_load.png").convert_alpha()
         self.phase_3_load = pygame.image.load("data/office_load.jpg").convert_alpha()
         
         
@@ -70,6 +70,14 @@ class game_loading():
                         else: 
                             self.phase = 1
                             self.load_activate = False
+                    if self.phase_2_load_rect.collidepoint(event.pos):
+                        pygame.mixer.Channel(0).set_volume(settings(self.screen,self.sound).get_volume())
+                        pygame.mixer.Channel(0).play(self.sound)
+                        if self.phase_check < 2:
+                            self.display_error_message()
+                        else: 
+                            self.phase = 2
+                            self.load_activate = False
     
     def get_startup_status(self):
         status = self.config.get("saved_session","startup")
@@ -85,6 +93,9 @@ class game_loading():
     
     def get_initial_budget(self):
         return int(self.config.get("saved_session","initial_budget"))
+    
+    def get_current_budget(self):
+        return int(self.config.get("saved_session","money"))
 
     def get_phase(self):
         return self.phase
@@ -92,6 +103,30 @@ class game_loading():
     def get_back_status(self):
         return self.back_status
     
+    def get_level(self):
+        return self.config.get("saved_session","level")
+
+    def get_salary(self):
+        return self.config.get("saved_session","pay")
+    
+    def get_skills(self):
+        return self.config.get("saved_session","skills")
+
+    def get_num_app(self):
+        return self.config.get("saved_session","num_app")
+    
+    def get_finalist_name(self,index):
+        return self.config.get(f"finalist_{index}","name")
+    
+    def get_finalist_skills(self,index):
+        return self.config.get(f"finalist_{index}","skills")
+
+    def get_finalist_exp(self,index):
+        return self.config.get(f"finalist_{index}","exp")
+    
+    def get_finalist_character(self,index):
+        return self.config.get(f"finalist_{index}","character")
+        
     def display_error_message(self):
         #display an error whenever an unavailable game session is chosen
         warn_rect = self.screen.blit(self.warn_text,(270,150))

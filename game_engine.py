@@ -23,7 +23,7 @@ class num_applicant_generator():
                     return randint(0,5)
                 elif self.exp >= 4: 
                     self.evil += 7
-                    return 0
+                    return 1
             elif self.pay == 1:   #low-ball pay. evil + 3
                 self.evil += 3
                 if self.exp < 1:
@@ -48,7 +48,7 @@ class num_applicant_generator():
         elif self.job == 1:   #mid-level job
             if self.pay == 0:     #unpaid. level + 8
                 self.evil += 8
-                return 0       #obviously
+                return 1       #obviously
             elif self.pay == 1:   #low-ball pay. level + 5
                 if self.exp < 4: 
                     self.evil += 3
@@ -66,10 +66,10 @@ class num_applicant_generator():
         else:                   #senior-level job
             if self.pay == 0:     #unpaid. level + 12
                 self.evil += 10
-                return 0       #obviously
+                return 1       #obviously
             elif self.pay == 1:   #low-ball pay. level + 8
                 self.evil += 8
-                return 0  
+                return 1  
             elif self.pay == 2:   #good pay. level - 1
                 if self.exp < 4:
                     self.evil -= 2 
