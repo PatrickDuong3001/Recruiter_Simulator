@@ -1575,9 +1575,10 @@ while game_run:    #game_loop
                     tablet_animate.fadeout_screen(900,500)
                     tablet_break = False
                     
-                tablet_animate.tablet_move()
-                pygame.quit()
-                sys.exit()
+                tablet_animate.tablet_still()
+                timer_count(100).start_timer()
+                #pygame.quit()
+                #sys.exit()
             
                                                     
     speed.tick(FPS)
