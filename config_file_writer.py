@@ -190,7 +190,7 @@ class config_write():
     
     def set_num_finalist(self,num):
         '''
-        set numer of finalists
+        set number of finalists
         '''
         self.config.set("saved_session","num_finalist",str(num))
         with open("data/game_variables.cfg","w") as configfile:

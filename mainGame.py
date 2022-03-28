@@ -13,6 +13,7 @@ from warn_countdown import warn_countdowner
 from resume_data_generator import resume_generator
 from fast_forward_2 import fast_forward_animation_2
 from tablet_animation_2 import tablet_animator
+from player_record_handler import player_recorder
 
 #initiate pygame session
 WIDTH = 900
@@ -21,6 +22,7 @@ FPS = 60
 pygame.init()
 speed = pygame.time.Clock()
 config_writer = config_file_writer.config_write()
+record_handler = player_recorder()
 
 #game variables initiate
 #may need resetting when the game ends
@@ -100,6 +102,13 @@ cre_1 = cre_font.render("Game & Sound Development: Patrick Duong",True,"Red")
 cre_2 = cre_font.render("Graphics: Patrick Duong",True,"Red")
 cre_3 = cre_font.render("Voice: Daisy Duong, Patrick Duong",True,"Red")
 cre_4 = cre_font.render("Game Content: Daisy Duong, Patrick Duong",True,"Red")
+title_score = title_cre_font.render("Score Records",True,"Red")
+score_list_font = pygame.font.Font("data/animation.TTF",25)
+pre_player_1 = score_list_font.render("Player 1",True,"Red")
+pre_player_2 = score_list_font.render("Player 2",True,"Red")
+pre_player_3 = score_list_font.render("Player 3",True,"Red")
+score_title = score_list_font.render("Score",True,"Red")
+name_title = score_list_font.render("Name",True,"Red")
 hiring = pygame.image.load("data/hiring.png").convert_alpha()
 recruiter_guide = recruiter_font.render("Recruiter Training",True,"Red") 
 
@@ -246,6 +255,7 @@ music_active = False
 phase = 0   #phase of recruitment
 guide_activate = False
 credit_activate = False
+score_list_activate = False
 fast_forward_transition = False
 
 #control panel phase 1
@@ -413,6 +423,11 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).play(click_sound)
                     start_screen = False
                     credit_activate = True
+                elif score_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    start_screen = False
+                    score_list_activate = True
                 elif load_button_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
@@ -429,11 +444,11 @@ while game_run:    #game_loop
     while credit_activate:
         screen.fill("#48dcff")
         screen.blit(title_cre,(330,30))
-        screen.blit(cre_1,(80,140))
-        screen.blit(cre_2,(80,200))
-        screen.blit(cre_3,(80,260))
-        screen.blit(cre_4,(80,320))
-        back_guide_rect = screen.blit(back_guide,(10,10))
+        screen.blit(cre_1,(250,140))
+        screen.blit(cre_2,(250,200))
+        screen.blit(cre_3,(250,260))
+        screen.blit(cre_4,(250,320))
+        back_cre_rect = screen.blit(back_guide,(10,10))
         pygame.display.update()
         
         for event in pygame.event.get():
@@ -441,10 +456,43 @@ while game_run:    #game_loop
                 pygame.quit()    #quit game
                 sys.exit()     
             if event.type == pygame.MOUSEBUTTONDOWN:        
-                if back_guide_rect.collidepoint(event.pos):
+                if back_cre_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     credit_activate = False
+                    start_screen = True
+    while score_list_activate:
+        player_name_1 = cre_font.render(f"{record_handler.get_player_name(1)}",True,"Red")
+        player_name_2 = cre_font.render(f"{record_handler.get_player_name(2)}",True,"Red")
+        player_name_3 = cre_font.render(f"{record_handler.get_player_name(3)}",True,"Red")
+        player_score_1 = cre_font.render(f"{record_handler.get_player_score(1)}",True,"Red")
+        player_score_2 = cre_font.render(f"{record_handler.get_player_score(2)}",True,"Red")
+        player_score_3 = cre_font.render(f"{record_handler.get_player_score(3)}",True,"Red")
+        screen.fill("#48dcff")
+        screen.blit(title_score,(220,30))
+        screen.blit(name_title,(420,140))
+        screen.blit(score_title,(670,140))
+        screen.blit(pre_player_1,(80,200))
+        screen.blit(pre_player_2,(80,280))
+        screen.blit(pre_player_3,(80,360))
+        back_score_rect = screen.blit(back_guide,(10,10))  
+        screen.blit(player_name_1,(420,200))      
+        screen.blit(player_name_2,(420,280))
+        screen.blit(player_name_3,(420,360))
+        screen.blit(player_score_1,(710,200))
+        screen.blit(player_score_2,(710,280))
+        screen.blit(player_score_3,(710,360))
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()     
+            if event.type == pygame.MOUSEBUTTONDOWN:        
+                if back_score_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    score_list_activate = False
                     start_screen = True
                                                   
     while guide_activate: 
