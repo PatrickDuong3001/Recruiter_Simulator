@@ -58,6 +58,8 @@ three_week_sound = pygame.mixer.Sound("data/three_week.mp3")
 three_week_sound.set_volume(0.1)
 eternity_sound = pygame.mixer.Sound("data/eternity.mp3")
 eternity_sound.set_volume(0.1)
+warn_sound = pygame.mixer.Sound("data/warn.mp3")
+warn_sound.set_volume(0.1)
 
 #all animation initiations
 fast_forwarder = fast_forward_animation(screen,clock_fast_sound,three_week_sound)
@@ -259,9 +261,9 @@ white_transition = True
 pay_count = False
 exp_count = False
 skills_count = 0
-unpaid_press = False     #reused across job-level choices
-lowpaid_press = False
-highpaid_press = False
+unpaid_press = False     #reused across job-level choices       #may need resetting at the end
+lowpaid_press = False                                           #may need resetting at the end
+highpaid_press = False                                          #may need resetting at the end
 exp_0_press = False
 exp_1_4_press = False
 exp_4_press = False
@@ -354,6 +356,13 @@ def choose_random_interviewee():
         index = random.randint(1,5)
     chosen_candidate_index.append(index)
     return index
+
+def money_error():
+    '''
+    warn player of sufficient budget, only once
+    '''
+    pygame.mixer.Channel(0).play(warn_sound)
+    timer_count(2).start_timer()
     
 while game_run:    #game_loop    
     while start_screen:
@@ -709,14 +718,26 @@ while game_run:    #game_loop
                                 screen.blit(intern_unpaid_shade,(350,110))
                             elif lowpaid_press:
                                 if money_deduct:
-                                    budget -= 5250
-                                    money_deduct = False 
-                                screen.blit(intern_low_startup_shade,(450,110))
+                                    budget -= 5250   
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 5250
+                                        lowpaid_press = False
+                                    else:
+                                        money_deduct = False 
+                                if budget >=0 and money_deduct == False:
+                                    screen.blit(intern_low_startup_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 26250
-                                    money_deduct = False
-                                screen.blit(intern_high_startup_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 26250
+                                        highpaid_press = False
+                                    else:  
+                                        money_deduct = False
+                                if budget >=0 and money_deduct == False:
+                                    screen.blit(intern_high_startup_shade,(550,110))
                         elif bigtech_thread: 
                             if unpaid_press:
                                 budget -= 0
@@ -724,13 +745,25 @@ while game_run:    #game_loop
                             elif lowpaid_press:
                                 if money_deduct:
                                     budget -= 12501
-                                    money_deduct = False 
-                                screen.blit(intern_low_bigtech_shade,(450,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 12501
+                                        lowpaid_press = False
+                                    else: 
+                                        money_deduct = False 
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(intern_low_bigtech_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 42000
-                                    money_deduct = False
-                                screen.blit(intern_high_bigtech_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 42000
+                                        highpaid_press = False
+                                    else: 
+                                        money_deduct = False
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(intern_high_bigtech_shade,(550,110))
                     
                     if exp_count:
                         if exp_0_press:
@@ -925,13 +958,25 @@ while game_run:    #game_loop
                             elif lowpaid_press:
                                 if money_deduct:
                                     budget -= 41604
-                                    money_deduct = False 
-                                screen.blit(mid_lowpaid_startup_shade,(450,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 41604
+                                        lowpaid_press = False 
+                                    else: 
+                                        money_deduct = False 
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(mid_lowpaid_startup_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 126000
-                                    money_deduct = False
-                                screen.blit(mid_highpaid_startup_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 126000
+                                        highpaid_press = False
+                                    else: 
+                                        money_deduct = False
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(mid_highpaid_startup_shade,(550,110))
                         elif bigtech_thread: 
                             if unpaid_press:
                                 budget -= 0
@@ -939,13 +984,25 @@ while game_run:    #game_loop
                             elif lowpaid_press:
                                 if money_deduct:
                                     budget -= 73500
-                                    money_deduct = False 
-                                screen.blit(mid_lowpaid_bigtech_shade,(450,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 73500
+                                        lowpaid_press = False
+                                    else: 
+                                        money_deduct = False 
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(mid_lowpaid_bigtech_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 172800
-                                    money_deduct = False
-                                screen.blit(mid_highpaid_bigtech_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 172800
+                                        highpaid_press = False
+                                    else: 
+                                        money_deduct = False
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(mid_highpaid_bigtech_shade,(550,110))
                     
                     if exp_count:
                         if exp_0_press:
@@ -1134,13 +1191,25 @@ while game_run:    #game_loop
                             elif lowpaid_press:
                                 if money_deduct:
                                     budget -= 62400
-                                    money_deduct = False 
-                                screen.blit(senior_lowpaid_startup_shade,(450,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 62400
+                                        lowpaid_press = False
+                                    else: 
+                                        money_deduct = False 
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(senior_lowpaid_startup_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 145600
-                                    money_deduct = False
-                                screen.blit(senior_highpaid_startup_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 145600
+                                        highpaid_press = False
+                                    else: 
+                                        money_deduct = False
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(senior_highpaid_startup_shade,(550,110))
                         elif bigtech_thread: 
                             if unpaid_press:
                                 budget -= 0
@@ -1148,13 +1217,25 @@ while game_run:    #game_loop
                             elif lowpaid_press:
                                 if money_deduct:
                                     budget -= 93600
-                                    money_deduct = False 
-                                screen.blit(senior_lowpaid_bigtech_shade,(450,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 93600
+                                        lowpaid_press = False
+                                    else: 
+                                        money_deduct = False 
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(senior_lowpaid_bigtech_shade,(450,110))
                             elif highpaid_press:
                                 if money_deduct:
                                     budget -= 195000
-                                    money_deduct = False
-                                screen.blit(senior_highpaid_bigtech_shade,(550,110))
+                                    if budget < 0:
+                                        money_error()
+                                        budget += 195000
+                                        highpaid_press = False
+                                    else: 
+                                        money_deduct = False
+                                if budget >= 0 and money_deduct == False:
+                                    screen.blit(senior_highpaid_bigtech_shade,(550,110))
                     
                     if exp_count:
                         if exp_0_press:
