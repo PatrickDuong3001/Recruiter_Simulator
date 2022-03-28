@@ -76,6 +76,8 @@ start_button = pygame.image.load("data/start_button.png").convert_alpha()
 guide_button = pygame.image.load("data/guide_button.png").convert_alpha()
 setting_button = pygame.image.load("data/setting_button.png").convert_alpha()
 load_button = pygame.image.load("data/load_button.png").convert_alpha()
+credit_button = pygame.image.load("data/credit.png").convert_alpha()
+score_button = pygame.image.load("data/score.png").convert_alpha()
 info = pygame.font.Font("data/arial.TTF",15)
 name = info.render("Patrick",False,"White")
 title_start = pygame.font.Font("data/animation.TTF",40)
@@ -89,6 +91,13 @@ guide_3 = guide_font.render("-You will hire any interns for 3 months and any ful
 guide_4 = guide_font.render("-You have to complete the whole recruitment process for each position before hiring for the next one.",True,"Red")
 guide_5 = guide_font.render("-The number of resumes you receive depends on your choice for job posting. You have 10 seconds to screen each resume. Watch out for the timer!",True,"Red")
 guide_6 = guide_font.render("-Every choice you make during each phase will result in a different outcome during the process. Be careful with your decisions!",True,"Red")
+title_cre_font = pygame.font.Font("data/animation.TTF",45)
+title_cre = title_cre_font.render("Credits",True,"Red")
+cre_font = pygame.font.Font("data/arial.TTF",20)
+cre_1 = cre_font.render("Game & Sound Development: Patrick Duong",True,"Red")
+cre_2 = cre_font.render("Graphics: Patrick Duong",True,"Red")
+cre_3 = cre_font.render("Voice: Daisy Duong, Patrick Duong",True,"Red")
+cre_4 = cre_font.render("Game Content: Daisy Duong, Patrick Duong",True,"Red")
 hiring = pygame.image.load("data/hiring.png").convert_alpha()
 recruiter_guide = recruiter_font.render("Recruiter Training",True,"Red") 
 
@@ -234,6 +243,7 @@ game_run = True
 music_active = False
 phase = 0   #phase of recruitment
 guide_activate = False
+credit_activate = False
 fast_forward_transition = False
 
 #control panel phase 1
@@ -350,9 +360,11 @@ while game_run:    #game_loop
         setting = settings(screen,intro_song)
         loads = game_loading(screen,click_sound)
         screen.blit(start_image,(0,0))
-        start_button_rect = screen.blit(start_button,(390,80))
-        guide_button_rect = screen.blit(guide_button,(240,80))
+        start_button_rect = screen.blit(start_button,(280,80))
+        guide_button_rect = screen.blit(guide_button,(150,80))
+        credit_button_rect = screen.blit(credit_button,(410,80))
         load_button_rect = screen.blit(load_button,(540,80))
+        score_button_rect = screen.blit(score_button,(670,80))
         setting_button_rect = screen.blit(setting_button,(850,450))
         
         screen.blit(name,(325,470))
@@ -387,6 +399,11 @@ while game_run:    #game_loop
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
                     setting.run_setting()   
+                elif credit_button_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    start_screen = False
+                    credit_activate = True
                 elif load_button_rect.collidepoint(event.pos):
                     pygame.mixer.Channel(0).set_volume(setting.get_volume())
                     pygame.mixer.Channel(0).play(click_sound)
@@ -399,7 +416,28 @@ while game_run:    #game_loop
                         budget = loads.get_initial_budget()
                         start_screen = False
                         game_activate = False
-                                            
+                        
+    while credit_activate:
+        screen.fill("#48dcff")
+        screen.blit(title_cre,(330,30))
+        screen.blit(cre_1,(80,140))
+        screen.blit(cre_2,(80,200))
+        screen.blit(cre_3,(80,260))
+        screen.blit(cre_4,(80,320))
+        back_guide_rect = screen.blit(back_guide,(10,10))
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    #quit game
+                sys.exit()     
+            if event.type == pygame.MOUSEBUTTONDOWN:        
+                if back_guide_rect.collidepoint(event.pos):
+                    pygame.mixer.Channel(0).set_volume(setting.get_volume())
+                    pygame.mixer.Channel(0).play(click_sound)
+                    credit_activate = False
+                    start_screen = True
+                                                  
     while guide_activate: 
         screen.fill("#48dcff")
         screen.blit(recruiter_guide,(100,50))
