@@ -36,6 +36,8 @@ level = None
 required_skills = []
 evil_score = 0              #evil score will affect the final score and dialogue choice during the interviews
 num_app = 0                 #number of applicants
+person_interviewed = []     #need emptying at the end of the game
+chosen_person = 0           
 
 #screen window setup
 pygame.display.set_caption('Become a Recruiter')  #set the title for the game
@@ -374,6 +376,17 @@ def money_error():
     pygame.mixer.Channel(0).play(warn_sound)
     timer_count(2).start_timer()
     
+def interviewee_to_choose():
+    '''
+    choose which person (1-5) to be interviewed
+    ''' 
+    chosen_person = random.randint(1,5)
+    while True:
+        if chosen_person not in person_interviewed:
+            person_interviewed.append(chosen_person)
+            break
+        chosen_person = random.randint(1,5)
+
 while game_run:    #game_loop    
     while start_screen:
         setting = settings(screen,intro_song)
